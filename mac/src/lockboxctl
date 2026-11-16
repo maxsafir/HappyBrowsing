@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.3.4
+VERSION=1.3.5
 BASE=/Library/Lockbox
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -137,7 +137,8 @@ TXT
     U="$2"; D="${3:-30}"; W="${4:-120}"
     [ -n "$U" ] && id "$U" >/dev/null 2>&1 || { echo "usage: sudo lockboxctl arm <user> [delay_min] [window_min]"; exit 1; }
     grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null || { echo "Chrome profile not active yet — install it and restart first (or Chrome would be closed)."; exit 1; }
-    plutil -p $(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1) 2>/dev/null | grep -q picker || { echo "Install the normal (locked) Lockbox – Chrome profile first — otherwise Chrome would be closed while locked."; exit 1; }
+    UPA=$(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1)
+    plutil -p "$UPA" 2>/dev/null | grep -q picker || { echo "Install the normal (locked) Lockbox – Chrome profile first — otherwise Chrome would be closed while locked."; exit 1; }
     echo "This makes '$U' a Standard user. Getting admin back will need a $D-minute wait in the Lockbox app."
     read -r -p "Type ARM to continue: " a; [ "$a" = ARM ] || { echo "cancelled"; exit 1; }
     echo "Recording which apps are trusted (open the apps you use before this, ~1 min)…"
