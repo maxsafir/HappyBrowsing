@@ -98,6 +98,23 @@
 						</dict>
 					</array>
 				</dict>
+			</dict>
+			<key>PayloadDisplayName</key>
+			<string>Lockbox chrome</string>
+			<key>PayloadEnabled</key>
+			<true/>
+			<key>PayloadIdentifier</key>
+			<string>com.lockbox.chrome.prefs.chrome</string>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadUUID</key>
+			<string>9A2A866A-B82E-5C67-8E35-8A95DB9095F7</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>PayloadContent</key>
+			<dict>
 				<key>com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh</key>
 				<dict>
 					<key>Forced</key>
@@ -125,15 +142,15 @@
 				</dict>
 			</dict>
 			<key>PayloadDisplayName</key>
-			<string>Lockbox Chrome rules</string>
+			<string>Lockbox ubol</string>
 			<key>PayloadEnabled</key>
 			<true/>
 			<key>PayloadIdentifier</key>
-			<string>com.lockbox.chrome.prefs</string>
+			<string>com.lockbox.chrome.prefs.ubol</string>
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>C2813043-DE57-5B2D-BF1C-4500E752F9DE</string>
+			<string>5EC46BA0-A978-5407-A3A3-B4CF8D03FB57</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -151,7 +168,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>D4691A1B-A25F-5C7E-9D1B-E271AFAADC2F</string>
+	<string>103E4942-33AB-5A0B-8CCB-9D509CE6B185</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

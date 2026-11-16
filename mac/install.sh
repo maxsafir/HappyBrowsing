@@ -1,5 +1,5 @@
 #!/bin/bash
-# Lockbox 1.3 installer — sudo bash install.sh [NEXTDNS_CONFIG_ID]
+# Lockbox 1.3.3 installer — sudo bash install.sh [NEXTDNS_CONFIG_ID]
 # Installs every layer but does NOT take admin away. Arming is a separate, explicit step.
 set -e
 [ "$(id -u)" = 0 ] || { echo "Run with: sudo bash install.sh [NEXTDNS_ID]"; exit 1; }
@@ -14,7 +14,7 @@ grep -qs '^ARMED=1' "$BASE/config" && echo "Lockbox is armed — re-installing k
 
 echo "== 1/6 Files"
 mkdir -p "$BASE/inbox" "$BASE/backup"
-for f in enforcer.sh trust-scan.sh browsers.txt hosts-block.txt youtube-domains.txt chrome-policy.plist Lockbox-Chrome.mobileconfig Lockbox-Chrome-setup.mobileconfig ubol-filters.txt lockboxctl uninstall.sh; do
+for f in enforcer.sh trust-scan.sh browsers.txt hosts-block.txt youtube-hosts.txt youtube-domains.txt chrome-policy.plist Lockbox-Chrome.mobileconfig Lockbox-Chrome-setup.mobileconfig ubol-filters.txt lockboxctl uninstall.sh; do
   cp -f "$SRC/$f" "$BASE/$f"
 done
 chown -R root:wheel "$BASE"
@@ -69,10 +69,10 @@ launchctl bootstrap system /Library/LaunchDaemons/com.lockbox.enforcer.plist
 sleep 6
 
 echo "== 6/6 Chrome profile"
-UP="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
-if grep -q picker "$UP" 2>/dev/null && grep -q DnsOverHttpsTemplates "$MP/com.google.Chrome.plist" 2>/dev/null; then
+UP=$(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1)
+if plutil -p "$UP" 2>/dev/null | grep -q picker && grep -q DnsOverHttpsTemplates "$MP/com.google.Chrome.plist" 2>/dev/null; then
   echo "   Chrome profile already active and locked"
-elif [ -f "$UP" ]; then
+elif [ -n "$UP" ]; then
   echo "   SETUP profile is active. When the filters are pasted, install the normal one:"
   echo "   open /Library/Lockbox/Lockbox-Chrome.mobileconfig"
 else

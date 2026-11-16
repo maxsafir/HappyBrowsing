@@ -59,20 +59,20 @@ plistlib.dump(policy, open(SRC / "chrome-policy.plist", "wb"))
 ns = uuid.UUID("6f1c2a52-0b5e-4f0e-9a7e-1c0ffee10c4b")
 
 def profile(ubol_settings, name, desc):
-    inner = {"PayloadType": "com.apple.ManagedClient.preferences", "PayloadVersion": 1,
-             "PayloadIdentifier": "com.lockbox.chrome.prefs",
-             "PayloadUUID": str(uuid.uuid5(ns, "inner-" + name + "-1.3.1")).upper(),
-             "PayloadDisplayName": "Lockbox Chrome rules", "PayloadEnabled": True,
-             "PayloadContent": {
-                 "com.google.Chrome": {"Forced": [{"mcx_preference_settings": policy}]},
-                 "com.google.Chrome.extensions." + UBOL: {"Forced": [{"mcx_preference_settings": ubol_settings}]},
-             }}
+    def payload(domain, settings, tag):
+        return {"PayloadType": "com.apple.ManagedClient.preferences", "PayloadVersion": 1,
+                "PayloadIdentifier": "com.lockbox.chrome.prefs." + tag,
+                "PayloadUUID": str(uuid.uuid5(ns, tag + "-" + name + "-1.3.3")).upper(),
+                "PayloadDisplayName": "Lockbox " + tag, "PayloadEnabled": True,
+                "PayloadContent": {domain: {"Forced": [{"mcx_preference_settings": settings}]}}}
     return {"PayloadType": "Configuration", "PayloadVersion": 1,
             "PayloadIdentifier": "com.lockbox.chrome",
-            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.3.1")).upper(),
+            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.3.3")).upper(),
             "PayloadDisplayName": "Lockbox – Chrome" + ("" if name == "locked" else " (setup)"),
             "PayloadDescription": desc, "PayloadOrganization": "Lockbox",
-            "PayloadScope": "System", "PayloadContent": [inner]}
+            "PayloadScope": "System",
+            "PayloadContent": [payload("com.google.Chrome", policy, "chrome"),
+                               payload("com.google.Chrome.extensions." + UBOL, ubol_settings, "ubol")]}
 
 plistlib.dump(profile(UBOL_LOCKED, "locked",
     "Lockbox rules for Google Chrome: YouTube video pages only, Instagram blocked, filters locked."),

@@ -1,4 +1,4 @@
-# Lockbox for macOS 1.3
+# Lockbox for macOS 1.3.3
 
 **A commitment device for your Mac.** Lockbox blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin (to install an app, run `sudo`, update macOS), you request it and wait. The wait is the point.
 
@@ -29,7 +29,8 @@ Tested on an Apple Silicon Mac with Google Chrome, November 2026.
  │  • if the Chrome profile disappears while armed → closes Chrome until it's back  │
  │  • runs the unlock state machine:  LOCKED → PENDING (wait) → UNLOCKED → LOCKED   │
  └───────────────────────────────────────────────────────────────────────────────────┘
- System DNS            → YouTube domains go to a dead resolver (/etc/resolver), for every app
+ /etc/hosts            → Instagram + YouTube blocked for every app (Chrome skips /etc/hosts
+                         because it uses its own encrypted DNS)
  Chrome (via profile)  → its own encrypted DNS, so only Chrome can reach YouTube;
                          URL rules allow video pages only; no-settings extension hides the rest
  Lockbox.app           → drops a request file the enforcer reads (no privileges needed)
@@ -129,7 +130,7 @@ Recovery Mode on Apple Silicon asks for an **administrator** password before giv
 ## Troubleshooting
 
 **`verify` says "YouTube still resolves for other apps".**
-Your macOS version may not honour `/etc/resolver` files (a bug was reported in macOS 26.3.1). Workaround: in the NextDNS dashboard add the domains from `src/youtube-domains.txt` to the **Denylist**. Chrome isn't affected because it uses its own encrypted DNS (Cloudflare). Don't turn on NextDNS "Block Bypass Methods" — it would block Chrome's DNS.
+Check that `/etc/hosts` contains the Lockbox block (`grep -c lockbox /etc/hosts`). YouTube is blocked for other apps through `/etc/hosts`; Chrome skips that file because it uses its own encrypted DNS, which is why video pages still work there. NextDNS adds a second YouTube block for other apps when installed.
 
 **An app won't open (it closes immediately).**
 `lockboxctl status` shows why. Usually it's from a developer that wasn't on the Mac when you armed. Unlock, then `sudo lockboxctl trust /Applications/That.app` (or just re-lock — apps in /Applications are trusted on re-lock).

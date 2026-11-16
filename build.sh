@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")"
 python3 shared/build-chrome-policy.py
-for f in hosts-block.txt youtube-domains.txt ubol-filters.txt; do
+for f in hosts-block.txt youtube-hosts.txt youtube-domains.txt ubol-filters.txt; do
   cp shared/$f mac/src/$f; cp shared/$f windows/src/$f
 done
 chmod +x mac/install.sh mac/src/*.sh mac/src/lockboxctl

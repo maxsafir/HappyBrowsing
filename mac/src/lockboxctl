@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.3.1
+VERSION=1.3.3
 BASE=/Library/Lockbox
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -41,19 +41,19 @@ case "$1" in
       [ -e "$f" ] && ls -lO "$f" | grep -q schg && bad "locked leftover file: $f (run install.sh again)"
     done
     grep -q DnsOverHttpsTemplates "$MP/com.google.Chrome.plist" 2>/dev/null && ok "Chrome uses its own encrypted DNS (1.1 profile)" || bad "Chrome profile is not the 1.1 version (re-install the profile, restart)"
-    UP="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
-    if grep -q picker "$UP" 2>/dev/null; then ok "uBlock Origin Lite filters locked"
-    elif [ -f "$UP" ]; then bad "Chrome profile is the SETUP version — paste the filters, then install Lockbox-Chrome.mobileconfig"
-    else bad "uBlock Origin Lite settings not applied (install the Lockbox – Chrome profile)"; fi
-    grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram)" || bad "hosts block missing"
+    UP=$(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1)
+    if [ -n "$UP" ] && plutil -p "$UP" 2>/dev/null | grep -q picker; then ok "uBlock Origin Lite filters locked"
+    elif [ -n "$UP" ]; then bad "Chrome profile is the SETUP version — paste the filters, then install Lockbox-Chrome.mobileconfig"
+    else bad "uBlock Origin Lite settings not applied by macOS (its switches stay editable) — install the 1.3.3 profile, restart"; fi
+    grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram + YouTube for other apps)" || bad "hosts block missing"
     n=0; for d in $(grep -v '^#' $BASE/youtube-domains.txt 2>/dev/null); do [ -f "/etc/resolver/$d" ] && n=$((n+1)); done
     [ $n -gt 0 ] && ok "YouTube resolver block files: $n" || bad "YouTube resolver block files missing"
     if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null)" ]; then ok "YouTube does not resolve for other apps"
-    else bad "YouTube still resolves for other apps — see README: 'YouTube works in other apps'"; fi
+    else bad "YouTube still resolves for other apps (hosts block missing?)"; fi
     [ -n "$(dscacheutil -q host -a name www.google.com 2>/dev/null)" ] && ok "normal DNS works" || bad "normal DNS lookups failing"
     [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(wc -l < $BASE/trust/teams.txt | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
     if [ -x /usr/local/bin/nextdns ]; then
-      /usr/local/bin/nextdns status 2>/dev/null | grep -qi running && ok "NextDNS running" || bad "NextDNS installed but not running"
+      pgrep -x nextdns >/dev/null && ok "NextDNS running" || bad "NextDNS installed but not running"
     else echo "  – NextDNS not installed (optional)"; fi
     [ -d /Applications/Lockbox.app ] && ok "Lockbox app installed" || bad "Lockbox app missing"
     . $BASE/config 2>/dev/null
@@ -95,24 +95,25 @@ TXT
       install -m 755 -o root -g wheel "$(find "$T" -type f -name nextdns | head -1)" "$ND"; rm -rf "$T"
     fi
     "$ND" uninstall >/dev/null 2>&1 || true
-    "$ND" install -config "$ID" -report-client-info -auto-activate >/dev/null
+    FW=(); for d in $(grep -v '^#' $BASE/youtube-domains.txt); do FW+=(-forwarder "$d=https://127.0.0.1:9/dns-query"); done
+    "$ND" install -config "$ID" -report-client-info -auto-activate "${FW[@]}" >/dev/null   # YouTube blocked for every app except Chrome
     sleep 2; echo "NextDNS: $($ND status) with config $ID"
     echo "Check it at https://test.nextdns.io (should say status: ok)";;
 
   guide)
     . $BASE/config 2>/dev/null
-    UP="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
+    UP=$(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1)
     step() { echo; echo "NEXT: $1"; shift; for l in "$@"; do echo "  $l"; done; exit 0; }
     echo "Lockbox $VERSION — setup guide"
     pgrep -f /Library/Lockbox/enforcer.sh >/dev/null || step "Install Lockbox" \
       "cd ~/Downloads/lockbox-mac && sudo bash install.sh"
-    if ! grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && [ ! -f "$UP" ]; then
+    if ! grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && [ -z "$UP" ]; then
       step "Install the SETUP Chrome profile" \
         "open /Library/Lockbox/Lockbox-Chrome-setup.mobileconfig" \
         "System Settings → General → Device Management → double-click 'Lockbox – Chrome (setup)' → Install" \
         "Then quit Chrome (⌘Q), reopen it, and run: lockboxctl guide"
     fi
-    if ! grep -q picker "$UP" 2>/dev/null; then
+    if ! plutil -p "$UP" 2>/dev/null | grep -q picker; then
       step "Paste the YouTube filters, then lock them" \
         "1. pbcopy < /Library/Lockbox/ubol-filters.txt" \
         "2. Chrome → puzzle icon → uBlock Origin Lite → gear → Custom filters → paste → save" \
@@ -136,7 +137,7 @@ TXT
     U="$2"; D="${3:-30}"; W="${4:-120}"
     [ -n "$U" ] && id "$U" >/dev/null 2>&1 || { echo "usage: sudo lockboxctl arm <user> [delay_min] [window_min]"; exit 1; }
     grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null || { echo "Chrome profile not active yet — install it and restart first (or Chrome would be closed)."; exit 1; }
-    grep -q picker "$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist" 2>/dev/null || { echo "Install the normal (locked) Lockbox – Chrome profile first — otherwise Chrome would be closed while locked."; exit 1; }
+    plutil -p $(ls "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist 2>/dev/null | head -1) 2>/dev/null | grep -q picker || { echo "Install the normal (locked) Lockbox – Chrome profile first — otherwise Chrome would be closed while locked."; exit 1; }
     echo "This makes '$U' a Standard user. Getting admin back will need a $D-minute wait in the Lockbox app."
     read -r -p "Type ARM to continue: " a; [ "$a" = ARM ] || { echo "cancelled"; exit 1; }
     echo "Recording which apps are trusted (open the apps you use before this, ~1 min)…"

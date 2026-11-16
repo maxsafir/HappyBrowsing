@@ -43,9 +43,6 @@ enforce_admins() {
   for m in $(dscl . -read /Groups/admin GroupMembership 2>/dev/null | sed 's/^GroupMembership://'); do
     in_list "$m" "$allowed" || demote "$m"
   done
-  if dscl . -read /Groups/admin NestedGroups >/dev/null 2>&1; then
-    dscl . -delete /Groups/admin NestedGroups; log "cleared admin NestedGroups"
-  fi
   for u in $(dscl . -list /Users UniqueID | awk '$2>=500{print $1}'); do
     in_list "$u" "$allowed" && continue
     is_admin "$u" && demote "$u"
@@ -72,14 +69,17 @@ enforce_auth_files() {
   done
 }
 
-# ---------- /etc/hosts (Instagram, every app) ----------
+# ---------- /etc/hosts ----------
+# Instagram + YouTube for every app. Chrome uses its own encrypted DNS (Chrome profile) and does not
+# read /etc/hosts in that mode, so YouTube video pages still work in Chrome only.
 enforce_hosts() {
-  local want="$BASE/hosts-block.txt" cur
-  [ -f "$want" ] || return
+  local want cur
+  [ -f "$BASE/hosts-block.txt" ] || return
+  want=$(cat "$BASE/hosts-block.txt" "$BASE/youtube-hosts.txt" 2>/dev/null)
   cur=$(awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}f' "$HOSTS")
-  if [ "$cur" != "$(cat "$want")" ]; then
+  if [ "$cur" != "$want" ]; then
     awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}!f' "$HOSTS" > "$HOSTS.lockbox.tmp"
-    { echo "# >>> lockbox"; cat "$want"; echo "# <<< lockbox"; } >> "$HOSTS.lockbox.tmp"
+    { echo "# >>> lockbox"; printf '%s\n' "$want"; echo "# <<< lockbox"; } >> "$HOSTS.lockbox.tmp"
     cat "$HOSTS.lockbox.tmp" > "$HOSTS"; rm -f "$HOSTS.lockbox.tmp"
     chown root:wheel "$HOSTS"; chmod 644 "$HOSTS"
     dscacheutil -flushcache; killall -HUP mDNSResponder 2>/dev/null
@@ -107,11 +107,18 @@ enforce_resolvers() {
 
 # ---------- Chrome profile present? ----------
 CHROME_OK=1
-UBOL_PREFS="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
+ubol_open() { # true only if uBOL's settings are applied AND it's the setup (editable) variant
+  local f
+  for f in "$MP"/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist "$MP"/*/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist; do
+    [ -f "$f" ] || continue
+    plutil -p "$f" 2>/dev/null | grep -q picker && return 1 || return 0
+  done
+  return 1
+}
 check_chrome() {
   # OK = Lockbox profile active, and (while locked) the LOCKED variant, so uBOL's filter editor stays closed.
   if grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && \
-     { [ "$STATE" = unlocked ] || grep -q picker "$UBOL_PREFS" 2>/dev/null; }; then
+     { [ "$STATE" = unlocked ] || ! ubol_open; }; then
     [ "$CHROME_OK" = 0 ] && log "chrome profile present again"; CHROME_OK=1
   else
     [ "$CHROME_OK" = 1 ] && log "chrome profile missing or still the setup version"; CHROME_OK=0
@@ -164,8 +171,21 @@ guard_apps() {
 }
 
 # ---------- NextDNS ----------
+nextdns_forwarders() { # -> args that send every YouTube domain to a dead DoH endpoint
+  local d
+  for d in $(grep -v '^#' "$BASE/youtube-domains.txt" 2>/dev/null); do
+    printf -- '-forwarder\n%s=https://127.0.0.1:9/dns-query\n' "$d"
+  done
+}
 enforce_nextdns() {
   [ -x "$NEXTDNS" ] || return
+  if ! "$NEXTDNS" config 2>/dev/null | grep -q 'forwarder youtube.com='; then
+    local id; id=$("$NEXTDNS" config 2>/dev/null | awk '/^config /{print $2; exit}')
+    if [ -n "$id" ]; then
+      local args=(); while IFS= read -r a; do args+=("$a"); done < <(nextdns_forwarders)
+      "$NEXTDNS" install -config "$id" -report-client-info -auto-activate "${args[@]}" >/dev/null 2>&1 && log "nextdns YouTube forwarders re-applied"
+    fi
+  fi
   "$NEXTDNS" status 2>/dev/null | grep -qi running || { "$NEXTDNS" start >/dev/null 2>&1; log "nextdns started"; }
   local need=0 svc
   while IFS= read -r svc; do
@@ -216,7 +236,7 @@ write_status() {
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.3 started"
+log "enforcer 1.3.3 started"
 i=0
 while true; do
   load
