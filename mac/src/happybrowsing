@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.5.1
+VERSION=1.5.2
 BASE=/Library/HappyBrowsing
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -45,7 +45,7 @@ case "$1" in
     if [ -n "$UP" ] && plutil -p "$UP" 2>/dev/null | grep -q picker; then ok "uBlock Origin Lite filters locked"
     elif [ -n "$UP" ]; then bad "Chrome profile is the SETUP version — paste the filters, then install HappyBrowsing-Chrome.mobileconfig"
     else bad "uBlock Origin Lite settings not applied by macOS (its switches stay editable) — install HappyBrowsing-Chrome.mobileconfig again, restart"; fi
-    grep -q '^# >>> happybrowsing' /etc/hosts && ok "hosts block present (Instagram)" || bad "hosts block missing"
+    grep -q '^# >>> happybrowsing' /etc/hosts && ok "hosts block present (Instagram, iCloud Private Relay)" || bad "hosts block missing"
     if [ -x /usr/local/bin/nextdns ]; then
       cfg=$(/usr/local/bin/nextdns config 2>/dev/null); miss=""
       for d in $(grep -v '^#' $BASE/youtube-domains.txt); do grep -qE "forwarder ${d//./\\.}\\.?=" <<<"$cfg" || miss="$miss $d"; done
