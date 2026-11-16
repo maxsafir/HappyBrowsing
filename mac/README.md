@@ -1,4 +1,4 @@
-# Lockbox for macOS 1.3.3
+# Lockbox for macOS 1.3.6
 
 **A commitment device for your Mac.** Lockbox blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin (to install an app, run `sudo`, update macOS), you request it and wait. The wait is the point.
 
@@ -29,8 +29,9 @@ Tested on an Apple Silicon Mac with Google Chrome, November 2026.
  │  • if the Chrome profile disappears while armed → closes Chrome until it's back  │
  │  • runs the unlock state machine:  LOCKED → PENDING (wait) → UNLOCKED → LOCKED   │
  └───────────────────────────────────────────────────────────────────────────────────┘
- /etc/hosts            → Instagram + YouTube blocked for every app (Chrome skips /etc/hosts
-                         because it uses its own encrypted DNS)
+ /etc/hosts            → Instagram blocked for every app, Chrome included
+ NextDNS (on this Mac) → YouTube domains forwarded to a dead endpoint for every app;
+                         Chrome uses its own encrypted DNS, so only Chrome can reach YouTube
  Chrome (via profile)  → its own encrypted DNS, so only Chrome can reach YouTube;
                          URL rules allow video pages only; no-settings extension hides the rest
  Lockbox.app           → drops a request file the enforcer reads (no privileges needed)
@@ -130,7 +131,7 @@ Recovery Mode on Apple Silicon asks for an **administrator** password before giv
 ## Troubleshooting
 
 **`verify` says "YouTube still resolves for other apps".**
-Check that `/etc/hosts` contains the Lockbox block (`grep -c lockbox /etc/hosts`). YouTube is blocked for other apps through `/etc/hosts`; Chrome skips that file because it uses its own encrypted DNS, which is why video pages still work there. NextDNS adds a second YouTube block for other apps when installed.
+YouTube is blocked for other apps by the NextDNS app on your Mac (a local, root-owned setting; changing your NextDNS account online doesn't undo it). Install it with `sudo lockboxctl nextdns YOUR_ID` while unlocked. Chrome isn't affected because it uses its own encrypted DNS. Never put YouTube in `/etc/hosts`: Chrome reads that file too, and videos fail with "no internet connection".
 
 **An app won't open (it closes immediately).**
 `lockboxctl status` shows why. Usually it's from a developer that wasn't on the Mac when you armed. Unlock, then `sudo lockboxctl trust /Applications/That.app` (or just re-lock — apps in /Applications are trusted on re-lock).

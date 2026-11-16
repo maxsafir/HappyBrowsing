@@ -1,5 +1,5 @@
 #!/bin/bash
-# Lockbox 1.3.3 installer — sudo bash install.sh [NEXTDNS_CONFIG_ID]
+# Lockbox 1.3.6 installer — sudo bash install.sh [NEXTDNS_CONFIG_ID]
 # Installs every layer but does NOT take admin away. Arming is a separate, explicit step.
 set -e
 [ "$(id -u)" = 0 ] || { echo "Run with: sudo bash install.sh [NEXTDNS_ID]"; exit 1; }
@@ -14,7 +14,7 @@ grep -qs '^ARMED=1' "$BASE/config" && echo "Lockbox is armed — re-installing k
 
 echo "== 1/6 Files"
 mkdir -p "$BASE/inbox" "$BASE/backup"
-for f in enforcer.sh trust-scan.sh browsers.txt hosts-block.txt youtube-hosts.txt youtube-domains.txt chrome-policy.plist Lockbox-Chrome.mobileconfig Lockbox-Chrome-setup.mobileconfig ubol-filters.txt lockboxctl uninstall.sh; do
+for f in enforcer.sh trust-scan.sh browsers.txt hosts-block.txt youtube-domains.txt chrome-policy.plist Lockbox-Chrome.mobileconfig Lockbox-Chrome-setup.mobileconfig ubol-filters.txt lockboxctl uninstall.sh; do
   cp -f "$SRC/$f" "$BASE/$f"
 done
 chown -R root:wheel "$BASE"

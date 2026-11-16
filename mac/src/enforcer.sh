@@ -69,16 +69,15 @@ enforce_auth_files() {
   done
 }
 
-# ---------- /etc/hosts ----------
-# Instagram + YouTube for every app. Chrome uses its own encrypted DNS (Chrome profile) and does not
-# read /etc/hosts in that mode, so YouTube video pages still work in Chrome only.
+# ---------- /etc/hosts (Instagram, every app incl. Chrome) ----------
+# NOTE: Chrome reads /etc/hosts even with its own encrypted DNS, so YouTube must never be listed here.
 enforce_hosts() {
   local want cur
   [ -f "$BASE/hosts-block.txt" ] || return
-  want=$(cat "$BASE/hosts-block.txt" "$BASE/youtube-hosts.txt" 2>/dev/null)
+  want=$(cat "$BASE/hosts-block.txt")
   cur=$(awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}f' "$HOSTS")
   if [ "$cur" != "$want" ]; then
-    awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}!f' "$HOSTS" > "$HOSTS.lockbox.tmp"
+    awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}!f' "$HOSTS" | grep -v '# lockbox-test' > "$HOSTS.lockbox.tmp"
     { echo "# >>> lockbox"; printf '%s\n' "$want"; echo "# <<< lockbox"; } >> "$HOSTS.lockbox.tmp"
     cat "$HOSTS.lockbox.tmp" > "$HOSTS"; rm -f "$HOSTS.lockbox.tmp"
     chown root:wheel "$HOSTS"; chmod 644 "$HOSTS"
@@ -88,21 +87,15 @@ enforce_hosts() {
 }
 
 # ---------- YouTube for every app except Chrome ----------
-# The system resolver sends YouTube lookups to a dead port. Chrome resolves through its own
-# encrypted DNS (set by the Chrome profile), so only Chrome can still reach YouTube.
-RESOLVER_BODY=$'# lockbox\nnameserver 127.0.0.1\nport 1'
-enforce_resolvers() {
-  local list="$BASE/youtube-domains.txt" d f changed=0
-  [ -f "$list" ] || return
-  mkdir -p /etc/resolver
-  while IFS= read -r d; do
-    case "$d" in ''|\#*) continue;; esac
-    f="/etc/resolver/$d"
-    if [ "$(cat "$f" 2>/dev/null)" != "$RESOLVER_BODY" ]; then
-      printf '%s\n' "$RESOLVER_BODY" > "$f"; chown root:wheel "$f"; chmod 644 "$f"; changed=1
-    fi
-  done < "$list"
-  [ $changed = 1 ] && { killall -HUP mDNSResponder 2>/dev/null; dscacheutil -flushcache; log "YouTube resolver block re-applied"; }
+# Done by the NextDNS app on this Mac (see enforce_nextdns): every YouTube domain is forwarded to a
+# dead endpoint. Chrome uses its own encrypted DNS, so it isn't affected. Old /etc/resolver files
+# from 1.1–1.3.5 are removed here (macOS 26 ignores them).
+cleanup_resolvers() {
+  local f removed=0
+  for f in /etc/resolver/*; do
+    [ -f "$f" ] && head -1 "$f" 2>/dev/null | grep -q '^# lockbox' && { rm -f "$f"; removed=1; }
+  done
+  [ $removed = 1 ] && { killall -HUP mDNSResponder 2>/dev/null; log "removed old YouTube resolver files"; }
 }
 
 # ---------- Chrome profile present? ----------
@@ -179,7 +172,7 @@ nextdns_forwarders() { # -> args that send every YouTube domain to a dead DoH en
 }
 enforce_nextdns() {
   [ -x "$NEXTDNS" ] || return
-  if ! "$NEXTDNS" config 2>/dev/null | grep -q 'forwarder youtube.com='; then
+  if ! "$NEXTDNS" config 2>/dev/null | grep -qE 'forwarder youtube\.com\.?='; then
     local id; id=$("$NEXTDNS" config 2>/dev/null | awk '/^config /{print $2; exit}')
     if [ -n "$id" ]; then
       local args=(); while IFS= read -r a; do args+=("$a"); done < <(nextdns_forwarders)
@@ -236,7 +229,7 @@ write_status() {
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.3.3 started"
+log "enforcer 1.3.6 started"
 i=0
 while true; do
   load
@@ -244,7 +237,7 @@ while true; do
   enforce_admins
   enforce_auth_files
   enforce_hosts
-  enforce_resolvers
+  cleanup_resolvers
   check_chrome
   guard_apps
   [ $((i % 6)) = 0 ] && enforce_nextdns

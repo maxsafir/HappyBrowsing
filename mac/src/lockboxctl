@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.3.5
+VERSION=1.3.6
 BASE=/Library/Lockbox
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -45,11 +45,12 @@ case "$1" in
     if [ -n "$UP" ] && plutil -p "$UP" 2>/dev/null | grep -q picker; then ok "uBlock Origin Lite filters locked"
     elif [ -n "$UP" ]; then bad "Chrome profile is the SETUP version — paste the filters, then install Lockbox-Chrome.mobileconfig"
     else bad "uBlock Origin Lite settings not applied by macOS (its switches stay editable) — install the 1.3.3 profile, restart"; fi
-    grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram + YouTube for other apps)" || bad "hosts block missing"
-    n=0; for d in $(grep -v '^#' $BASE/youtube-domains.txt 2>/dev/null); do [ -f "/etc/resolver/$d" ] && n=$((n+1)); done
-    [ $n -gt 0 ] && ok "YouTube resolver block files: $n" || bad "YouTube resolver block files missing"
+    grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram)" || bad "hosts block missing"
+    if [ -x /usr/local/bin/nextdns ]; then
+      /usr/local/bin/nextdns config 2>/dev/null | grep -q 'forwarder youtube.com' && ok "NextDNS blocks YouTube for other apps" || bad "NextDNS YouTube block missing (re-run: sudo lockboxctl nextdns YOUR_ID while unlocked)"
+    fi
     if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null | awk '/address:/{print $2}' | grep -vE '^(0\.0\.0\.0|::)$')" ]; then ok "YouTube does not resolve for other apps"
-    else bad "YouTube still resolves for other apps (hosts block missing?)"; fi
+    elif [ -x /usr/local/bin/nextdns ]; then bad "YouTube still resolves for other apps"; else echo "  – YouTube isn't blocked for other apps without NextDNS (lockboxctl nextdns)"; fi
     [ -n "$(dscacheutil -q host -a name www.google.com 2>/dev/null)" ] && ok "normal DNS works" || bad "normal DNS lookups failing"
     [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(wc -l < $BASE/trust/teams.txt | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
     if [ -x /usr/local/bin/nextdns ]; then
