@@ -1,0 +1,10 @@
+# Blocked for every app except Chrome (which uses its own encrypted DNS).
+youtube.com
+youtu.be
+yt.be
+ytimg.com
+googlevideo.com
+youtube-nocookie.com
+youtubei.googleapis.com
+youtube.googleapis.com
+youtubekids.com

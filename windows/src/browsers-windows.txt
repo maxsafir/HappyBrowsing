@@ -1,0 +1,31 @@
+# Browsers Lockbox closes on Windows. Plain lines = program file names; "signer:" lines = Authenticode publisher.
+firefox.exe
+librewolf.exe
+waterfox.exe
+zen.exe
+floorp.exe
+brave.exe
+msedge.exe
+opera.exe
+opera_gx.exe
+vivaldi.exe
+arc.exe
+yandex.exe
+whale.exe
+iexplore.exe
+chromium.exe
+thorium.exe
+comet.exe
+duckduckgo.exe
+sidekick.exe
+maxthon.exe
+palemoon.exe
+instagram.exe
+signer:Mozilla Corporation
+signer:Brave Software, Inc.
+signer:Opera Norway AS
+signer:Vivaldi Technologies AS
+signer:The Browser Company of New York Inc.
+signer:Yandex LLC
+signer:NAVER Corp.
+signer:Perplexity AI, Inc.

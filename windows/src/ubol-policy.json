@@ -1,0 +1,26 @@
+{
+  "id": "ddkjiahejlhfcafbddmgiahcphecmpfh",
+  "locked": {
+    "disabledFeatures": [
+      "dashboard",
+      "develop",
+      "filteringMode",
+      "picker",
+      "zapper"
+    ],
+    "noFiltering": [
+      "-*"
+    ],
+    "disableFirstRunPage": true
+  },
+  "open": {
+    "disabledFeatures": [
+      "filteringMode",
+      "zapper"
+    ],
+    "noFiltering": [
+      "-*"
+    ],
+    "disableFirstRunPage": true
+  }
+}

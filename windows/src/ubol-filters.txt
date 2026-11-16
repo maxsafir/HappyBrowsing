@@ -1,0 +1,20 @@
+! Lockbox: YouTube shows the video and its title, nothing else.
+! Paste into uBlock Origin Lite → Dashboard → Custom filters, while the setup profile is installed.
+www.youtube.com##ytd-masthead
+www.youtube.com###masthead-container
+www.youtube.com##tp-yt-app-drawer
+www.youtube.com##ytd-mini-guide-renderer
+www.youtube.com##ytd-browse
+www.youtube.com##ytd-search
+www.youtube.com##ytd-shorts
+www.youtube.com###secondary
+www.youtube.com###related
+www.youtube.com##ytd-comments
+www.youtube.com###comments
+www.youtube.com##ytd-playlist-panel-renderer
+www.youtube.com##ytd-merch-shelf-renderer
+www.youtube.com##.ytp-endscreen-content
+www.youtube.com##.ytp-ce-element
+www.youtube.com##.ytp-autonav-endscreen-upnext-container
+www.youtube.com##.ytp-fullscreen-grid
+www.youtube.com##.ytp-pause-overlay

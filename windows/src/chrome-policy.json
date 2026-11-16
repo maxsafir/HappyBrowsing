@@ -1,0 +1,61 @@
+{
+  "URLBlocklist": [
+    "youtube.com",
+    "instagram.com",
+    "cdninstagram.com"
+  ],
+  "URLAllowlist": [
+    "youtube.com/watch",
+    "youtube.com/embed",
+    "youtube.com/redirect",
+    "accounts.youtube.com",
+    "consent.youtube.com",
+    "youtube.com/signin"
+  ],
+  "ExtensionSettings": {
+    "*": {
+      "runtime_blocked_hosts": [
+        "*://*.youtube.com",
+        "*://*.instagram.com",
+        "*://*.youtube-nocookie.com"
+      ]
+    },
+    "nppiofogichmlkadpbpkpojpidedifeh": {
+      "installation_mode": "force_installed",
+      "update_url": "https://clients2.google.com/service/update2/crx",
+      "runtime_allowed_hosts": [
+        "*://*.youtube.com",
+        "*://*.youtube-nocookie.com"
+      ],
+      "toolbar_pin": "force_unpinned"
+    },
+    "aklbieaecfoidlgjmiipikpgmhbcjoja": {
+      "installation_mode": "force_installed",
+      "update_url": "https://clients2.google.com/service/update2/crx",
+      "runtime_allowed_hosts": [
+        "*://*.youtube.com",
+        "*://*.youtube-nocookie.com"
+      ],
+      "toolbar_pin": "force_unpinned"
+    },
+    "ddkjiahejlhfcafbddmgiahcphecmpfh": {
+      "installation_mode": "force_installed",
+      "update_url": "https://clients2.google.com/service/update2/crx",
+      "runtime_allowed_hosts": [
+        "*://*.youtube.com",
+        "*://*.youtube-nocookie.com"
+      ],
+      "toolbar_pin": "force_unpinned"
+    }
+  },
+  "IncognitoModeAvailability": 1,
+  "BrowserGuestModeEnabled": false,
+  "DnsOverHttpsMode": "secure",
+  "DnsOverHttpsTemplates": "https://chrome.cloudflare-dns.com/dns-query",
+  "ExtensionDeveloperModeSettings": 1,
+  "DeveloperToolsAvailability": 1,
+  "DeveloperToolsAvailabilityBlocklist": [
+    "youtube.com",
+    "instagram.com"
+  ]
+}

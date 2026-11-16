@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lockbox — a commitment device for your Mac or PC</title>
+<meta name="description" content="Lockbox takes away your own admin rights on macOS and Windows, keeps YouTube to single videos, blocks Instagram, and makes every unlock wait 30 minutes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel:#E4E8EC;     /* page */
+    --plate:#F3F5F7;     /* raised surfaces */
+    --ink:#1C2430;       /* text, locked state */
+    --rule:#B7C0C9;      /* lines */
+    --brass:#A67C2E;     /* waiting */
+    --open:#2D6A57;      /* unlocked */
+    --muted:#5A6573;
+    --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--steel);color:var(--ink);font-family:var(--display);font-stretch:100%;font-size:18px;line-height:1.55}
+  a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+  :focus-visible{outline:3px solid var(--brass);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+  p{max-width:62ch}
+
+  /* header */
+  header.top{display:flex;justify-content:space-between;align-items:center;padding:26px 0}
+  .mark{display:flex;align-items:center;gap:10px;font-weight:800;font-stretch:118%;font-size:20px;letter-spacing:-.01em;text-decoration:none}
+  .mark svg{width:26px;height:26px}
+  nav a{margin-left:26px;font-size:16px;color:var(--muted);text-decoration:none}
+  nav a:hover{color:var(--ink);text-decoration:underline}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:56px 0 88px}
+  h1{font-weight:850;font-stretch:122%;font-size:clamp(42px,6vw,76px);line-height:.98;letter-spacing:-.03em;margin:0 0 26px}
+  .lede{font-size:21px;color:#2E3846;margin:0 0 34px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-block;font:inherit;font-size:17px;font-weight:650;padding:14px 22px;border-radius:6px;border:2px solid var(--ink);cursor:pointer;text-decoration:none}
+  .btn.solid{background:var(--ink);color:var(--plate)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .btn:hover{transform:translateY(-1px)}
+
+  /* the console: the memorable thing */
+  .console{background:var(--plate);border:2px solid var(--ink);border-radius:14px;padding:28px 30px 26px;box-shadow:10px 10px 0 var(--ink);position:relative}
+  .console[data-state="pending"]{box-shadow:10px 10px 0 var(--brass)}
+  .console[data-state="unlocked"]{box-shadow:10px 10px 0 var(--open)}
+  .state{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px}
+  .dot{width:12px;height:12px;border-radius:50%;background:var(--ink)}
+  [data-state="pending"] .dot{background:var(--brass)}
+  [data-state="unlocked"] .dot{background:var(--open)}
+  .clock{font-variant-numeric:tabular-nums;font-weight:300;font-stretch:62%;font-size:clamp(96px,13vw,156px);line-height:1;letter-spacing:-.02em;margin:14px 0 6px;transition:color .4s}
+  [data-state="pending"] .clock{color:var(--brass)}
+  [data-state="unlocked"] .clock{color:var(--open)}
+  .clock-note{color:var(--muted);font-size:16px;margin:0 0 22px;min-height:2.4em}
+  .console .btn{width:100%;text-align:center}
+  .console .btn.solid{border-color:var(--ink)}
+  [data-state="pending"] .btn.solid{background:var(--brass);border-color:var(--brass)}
+  [data-state="unlocked"] .btn.solid{background:var(--open);border-color:var(--open)}
+  .demo-foot{display:flex;justify-content:space-between;margin-top:14px;font-size:14px;color:var(--muted)}
+  .linkish{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+  /* sections */
+  section{padding:84px 0;border-top:2px solid var(--ink)}
+  h2{font-weight:800;font-stretch:115%;font-size:clamp(30px,3.6vw,44px);line-height:1.05;letter-spacing:-.02em;margin:0 0 18px;max-width:22ch}
+  .intro{color:#2E3846;margin:0 0 44px}
+
+  /* allowed / blocked ledger */
+  .ledger{display:grid;grid-template-columns:1fr 1fr;gap:0 56px}
+  .ledger h3{font-size:20px;font-weight:750;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+  .ledger ul{list-style:none;margin:0;padding:0}
+  .ledger li{padding:14px 0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:28px 1fr;gap:8px}
+  .ledger li span:first-child{font-weight:800}
+  .yes span:first-child{color:var(--open)}
+  .no span:first-child{color:#9B3B2F}
+  .ledger small{display:block;color:var(--muted);font-size:15px}
+
+  /* how it works */
+  .layers{display:grid;grid-template-columns:repeat(2,1fr);gap:34px 56px}
+  .layer h3{font-size:20px;font-weight:750;margin:0 0 6px}
+  .layer p{margin:0;color:#2E3846;font-size:17px}
+  .core{grid-column:1/-1;background:var(--ink);color:var(--plate);border-radius:14px;padding:30px 32px}
+  .core h3{font-stretch:115%;font-size:24px;margin:0 0 8px}
+  .core p{color:#C9D1DA;margin:0}
+
+  /* install steps (a real sequence, so numbered) */
+  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;max-width:820px}
+  ol.steps>li{counter-increment:s;display:grid;grid-template-columns:64px 1fr;gap:6px;padding:22px 0;border-bottom:1px solid var(--rule)}
+  ol.steps>li::before{content:counter(s);font-weight:300;font-stretch:62%;font-size:54px;line-height:.9;color:var(--brass)}
+  ol.steps h3{margin:0 0 6px;font-size:20px;font-weight:750}
+  ol.steps p{margin:0 0 10px;font-size:17px;color:#2E3846}
+  .code{position:relative;background:var(--ink);color:#E9EEF3;border-radius:8px;padding:14px 92px 14px 16px;font-family:var(--mono);font-size:14.5px;overflow-x:auto;white-space:pre}
+  .copy{position:absolute;top:8px;right:8px;font:600 13px var(--display);background:#2C3746;color:#E9EEF3;border:1px solid #435064;border-radius:5px;padding:6px 10px;cursor:pointer}
+  .copy:hover{background:#384658}
+
+  /* platform switch */
+  .platforms{display:inline-flex;border:2px solid var(--ink);border-radius:8px;overflow:hidden;margin:0 0 18px}
+  .platforms button{font:inherit;font-weight:650;font-size:16px;padding:10px 22px;border:0;background:transparent;color:var(--ink);cursor:pointer}
+  .platforms button[aria-selected="true"]{background:var(--ink);color:var(--plate)}
+
+  /* limits table */
+  table{border-collapse:collapse;width:100%;max-width:900px;font-size:17px}
+  th,td{text-align:left;padding:14px 16px 14px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+  th{font-weight:750;border-bottom:2px solid var(--ink)}
+  td:last-child{color:var(--muted)}
+
+  footer{border-top:2px solid var(--ink);padding:36px 0 60px;color:var(--muted);font-size:15px}
+  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr;gap:44px;padding-top:24px}
+    .ledger,.layers{grid-template-columns:1fr}
+    .ledger>div+div{margin-top:36px}
+    nav a{margin-left:16px}
+    nav a.hide-sm{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}.btn:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="mark" href="#">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="9" width="22" height="15" rx="3" fill="#1C2430"/><path d="M7 9V7a6 6 0 0 1 12 0v2" fill="none" stroke="#1C2430" stroke-width="3"/><circle cx="13" cy="16.5" r="2.4" fill="#A67C2E"/></svg>
+      Lockbox
+    </a>
+    <nav>
+      <a class="hide-sm" href="#blocks">What it blocks</a>
+      <a class="hide-sm" href="#how">How it works</a>
+      <a href="#install">Install</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Put thirty minutes between you and the feed.</h1>
+      <p class="lede">Lockbox takes away your own admin rights on your Mac or Windows PC, keeps YouTube to the one video you came for, and blocks Instagram. When you really need admin, you ask for it, and wait.</p>
+      <div class="cta">
+        <a class="btn solid" href="downloads/lockbox-mac.zip" download>Download for Mac</a>
+        <a class="btn solid" href="downloads/lockbox-windows.zip" download>Download for Windows</a>
+        <a class="btn ghost" href="https://github.com/maxsafir/lockbox">Source on GitHub</a>
+      </div>
+    </div>
+
+    <div class="console" id="console" data-state="locked" aria-live="polite">
+      <div class="state"><span class="dot" aria-hidden="true"></span><span id="stateLabel">Locked</span></div>
+      <div class="clock" id="clock">30:00</div>
+      <p class="clock-note" id="note">Your account is Standard. No sudo, no removing the blocks.</p>
+      <button class="btn solid" id="action" type="button">Request unlock</button>
+      <div class="demo-foot"><span>Demo runs 60× faster than the real thing</span><button class="linkish" id="reset" type="button">Reset</button></div>
+    </div>
+  </div>
+</div>
+
+<section id="blocks">
+  <div class="wrap">
+    <h2>One video in, nothing else out.</h2>
+    <p class="intro">Search on Google, click a YouTube result, watch it. Everything YouTube would normally show you next is gone.</p>
+    <div class="ledger">
+      <div>
+        <h3>Still works</h3>
+        <ul>
+          <li class="yes"><span>✓</span><span>YouTube video pages<small>Opened from Google or a link someone sent you</small></span></li>
+          <li class="yes"><span>✓</span><span>Embedded videos on other sites</span></li>
+          <li class="yes"><span>✓</span><span>Chrome, with your own extensions</span></li>
+          <li class="yes"><span>✓</span><span>Installing apps, sudo, admin prompts<small>After a 30-minute unlock wait</small></span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Blocked</h3>
+        <ul>
+          <li class="no"><span>✕</span><span>YouTube home, Shorts, search, channels<small>Search bar, comments, sidebar and end screens hidden on video pages</small></span></li>
+          <li class="no"><span>✕</span><span>Instagram, in every app<small>Chrome rules, the hosts file, and NextDNS on any Wi-Fi</small></span></li>
+          <li class="no"><span>✕</span><span>Safari, Firefox, Brave, Edge, Arc and 30 more<small>Closed within 5 seconds of opening</small></span></li>
+          <li class="no"><span>✕</span><span>YouTube in any other app<small>VS Code's browser, other apps' web views, scripts: only Chrome can reach it</small></span></li>
+          <li class="no"><span>✕</span><span>Re-signed or unknown apps while locked<small>Every running app's code signature is checked</small></span></li>
+          <li class="no"><span>✕</span><span>Incognito and guest mode</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>Six layers, one lock.</h2>
+    <p class="intro">Each layer is a built-in macOS, Windows or Chrome mechanism. Nothing patches the system or hides from you.</p>
+    <div class="layers">
+      <div class="core">
+        <h3>The enforcer</h3>
+        <p>A root background service that checks everything every 5 seconds. It keeps your account out of the admin group, restores the blocks if anything changes, checks every running app's signature, and runs the unlock timer. A Standard user can't stop it.</p>
+      </div>
+      <div class="layer"><h3>Chrome profile</h3><p>A system configuration profile sets Chrome's URL rules and force-installs the extensions that hide everything but the video, with their settings locked.</p></div>
+      <div class="layer"><h3>Split DNS</h3><p>YouTube doesn't resolve for any other app on the computer. Chrome alone uses its own encrypted DNS, so it's the only way in, and only to video pages.</p></div>
+      <div class="layer"><h3>Hosts file</h3><p>Instagram's domains point nowhere for every app on the computer, Chrome included.</p></div>
+      <div class="layer"><h3>App guard</h3><p>While locked, only apps from developers already on your computer can run. A renamed or re-signed browser is closed on sight.</p></div>
+      <div class="layer"><h3>NextDNS</h3><p>Optional. Filters DNS on any network you join, encrypted, through the official NextDNS CLI.</p></div>
+      <div class="layer"><h3>Lockbox app</h3><p>Request an unlock, cancel it, or re-lock early. Admin ends on its own after two hours.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <h2>Install in about ten minutes.</h2>
+    <p class="intro">You need an admin account for setup and Google Chrome. NextDNS is optional.</p>
+    <div class="platforms" role="tablist" aria-label="Platform">
+      <button role="tab" aria-selected="true" aria-controls="steps-mac" id="tab-mac" type="button">Mac</button>
+      <button role="tab" aria-selected="false" aria-controls="steps-win" id="tab-win" type="button">Windows</button>
+    </div>
+    <ol class="steps" id="steps-mac" role="tabpanel" aria-labelledby="tab-mac">
+      <li><div><h3>Download and run the installer</h3><p><a href="downloads/lockbox-mac.zip" download>Download lockbox-mac.zip</a>, unzip it into Downloads, then in Terminal. It asks for a NextDNS ID; press Enter to skip.</p>
+        <div class="code"><span>cd ~/Downloads/lockbox-mac &amp;&amp; sudo bash install.sh</span><button class="copy" type="button">Copy</button></div></div></li>
+      <li><div><h3>Follow the guide</h3><p>It checks what's done and prints the exact next step: approving the Chrome profile, pasting the YouTube filters, then locking them. Run it again after each step.</p>
+        <div class="code"><span>lockboxctl guide</span><button class="copy" type="button">Copy</button></div></div></li>
+      <li><div><h3>Add NextDNS, if you want it</h3><p>Shows how to get a free config ID, then sets it up.</p>
+        <div class="code"><span>lockboxctl nextdns</span><button class="copy" type="button">Copy</button></div></div></li>
+      <li><div><h3>Arm it</h3><p>This removes your admin rights. Add a wait in minutes to change the 30-minute default.</p>
+        <div class="code"><span>sudo lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li>
+    </ol>
+    <ol class="steps" id="steps-win" role="tabpanel" aria-labelledby="tab-win" hidden>
+      <li><div><h3>Download and run the installer</h3><p><a href="downloads/lockbox-windows.zip" download>Download lockbox-windows.zip</a> and unzip it into Downloads. Right-click Start, choose Terminal (Admin), then:</p>
+        <div class="code"><span>cd $HOME\Downloads\lockbox-windows; powershell -ExecutionPolicy Bypass -File install.ps1</span><button class="copy" type="button">Copy</button></div></div></li>
+      <li><div><h3>Follow the guide</h3><p>In a new admin Terminal. It walks you through pasting the YouTube filters and locking them, then checks every layer.</p>
+        <div class="code"><span>lockboxctl guide</span><button class="copy" type="button">Copy</button></div></div></li>
+      <li><div><h3>Turn on BitLocker or Device encryption</h3><p>Without it, someone with a USB stick and physical access could edit files from outside Windows. Settings, then Privacy &amp; security, then Device encryption.</p></div></li>
+      <li><div><h3>Arm it</h3><p>Removes your administrator rights. Sign out and back in afterwards.</p>
+        <div class="code"><span>lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li>
+    </ol>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="wrap">
+    <h2>What it won't stop.</h2>
+    <p class="intro">Lockbox is built against impulses, not against a determined version of you with an afternoon free.</p>
+    <table>
+      <thead><tr><th>Way around</th><th>What it costs you</th></tr></thead>
+      <tbody>
+        <tr><td>Request an unlock, then remove Lockbox as admin</td><td>The 30-minute wait. That's the design.</td></tr>
+        <tr><td>Erase the Mac from Recovery, or reset the PC</td><td>Everything on the disk</td></tr>
+        <tr><td>Windows without BitLocker: edit files from a USB stick</td><td>A second computer and 15+ minutes</td></tr>
+        <tr><td>A Short opened as a regular video link</td><td>Plays</td></tr>
+        <tr><td>Your phone or another device</td><td>Not covered</td></tr>
+              </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Lockbox 1.3 for macOS and Windows. Uses <a href="https://nextdns.io">NextDNS</a>, uBlock Origin Lite and Mono for YouTube.</span>
+    <a href="https://github.com/maxsafir/lockbox">GitHub</a>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const SPEED = 60;                       // demo: 1 real second = 1 simulated minute
+  const DELAY = 30*60, WINDOW = 120*60;   // simulated seconds
+  const el = id => document.getElementById(id);
+  const box = el('console'), clock = el('clock'), label = el('stateLabel'), note = el('note'), btn = el('action');
+  let state = 'locked', left = DELAY, timer = null;
+
+  const fmt = s => {
+    s = Math.max(0, Math.ceil(s));
+    const h = Math.floor(s/3600), m = Math.floor(s%3600/60), sec = s%60;
+    return (h ? h + ':' + String(m).padStart(2,'0') : String(m).padStart(2,'0')) + ':' + String(sec).padStart(2,'0');
+  };
+  const set = (st) => {
+    state = st; box.dataset.state = st; clearInterval(timer); timer = null;
+    if (st === 'locked'){ left = DELAY; label.textContent = 'Locked'; clock.textContent = fmt(DELAY);
+      note.textContent = 'Your account is Standard. No sudo, no removing the blocks.'; btn.textContent = 'Request unlock'; }
+    if (st === 'pending'){ left = DELAY; label.textContent = 'Unlock requested';
+      note.textContent = 'Still locked while you wait. Cancel any time if you no longer need it.'; btn.textContent = 'Cancel request'; run(); }
+    if (st === 'unlocked'){ left = WINDOW; label.textContent = 'Unlocked';
+      note.textContent = 'You are admin. Install what you need. YouTube and Instagram stay blocked.'; btn.textContent = 'Re-lock now'; run(); }
+  };
+  const run = () => {
+    let last = performance.now(); clock.textContent = fmt(left);
+    timer = setInterval(() => {
+      const now = performance.now(); left -= (now - last) / 1000 * SPEED; last = now;
+      clock.textContent = fmt(left);
+      if (left <= 0) set(state === 'pending' ? 'unlocked' : 'locked');
+    }, 100);
+  };
+  btn.addEventListener('click', () => set(state === 'locked' ? 'pending' : 'locked'));
+  el('reset').addEventListener('click', () => set('locked'));
+
+  const tabs = [['tab-mac','steps-mac'],['tab-win','steps-win']];
+  tabs.forEach(([t,p]) => el(t).addEventListener('click', () => tabs.forEach(([t2,p2]) => {
+    el(t2).setAttribute('aria-selected', String(t2 === t)); el(p2).hidden = t2 !== t; })));
+  if (/Windows/.test(navigator.userAgent)) el('tab-win').click();
+
+  document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
+    const text = b.previousElementSibling.textContent;
+    try { await navigator.clipboard.writeText(text); b.textContent = 'Copied'; }
+    catch(e){ b.textContent = 'Select and copy'; }
+    setTimeout(() => b.textContent = 'Copy', 1600);
+  }));
+})();
+</script>
+</body>
+</html>

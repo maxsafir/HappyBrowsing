@@ -1,0 +1,161 @@
+#!/bin/bash
+# Lockbox control tool.  sudo lockboxctl <command>
+#   guide                      what to do next, step by step (no sudo needed)
+#   verify                     check every layer (no sudo needed)
+#   nextdns [ID]               no ID: how to get one + status.  With ID (sudo): install/switch NextDNS
+#   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
+#   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
+#   status                     state, config and recent log
+VERSION=1.3.0
+BASE=/Library/Lockbox
+MP="/Library/Managed Preferences"
+MARK=nppiofogichmlkadpbpkpojpidedifeh
+
+ok()  { printf '  \033[32m✔\033[0m %s\n' "$*"; }
+bad() { printf '  \033[31m✘\033[0m %s\n' "$*"; FAIL=1; }
+need_root() { [ "$(id -u)" = 0 ] || { echo "run with sudo"; exit 1; }; }
+
+writeconf() { # TARGET ARMED DELAY_SEC WINDOW_SEC EXEMPT
+  printf 'TARGET_USER=%s\nARMED=%s\nUNLOCK_DELAY=%s\nADMIN_WINDOW=%s\nEXEMPT="%s"\n' "$1" "$2" "$3" "$4" "$5" > $BASE/config
+  chown root:wheel $BASE/config; chmod 644 $BASE/config
+}
+setstate() { printf 'STATE=%s\nUNLOCK_AT=0\nRELOCK_AT=0\n' "$1" > $BASE/state; chmod 644 $BASE/state; }
+snapshot() {
+  rm -rf $BASE/snap; mkdir -p $BASE/snap/sudoers.d $BASE/snap/pam.d
+  cp -p /etc/sudoers $BASE/snap/sudoers
+  cp -p /etc/sudoers.d/* $BASE/snap/sudoers.d/ 2>/dev/null
+  cp -p /etc/pam.d/* $BASE/snap/pam.d/
+  chown -R root:wheel $BASE/snap; chmod -R go-w $BASE/snap
+}
+is_admin() { dsmemberutil checkmembership -U "$1" -G admin 2>/dev/null | grep -q "is a member"; }
+wait_for() { # seconds condition...
+  local t=$1; shift; while [ "$t" -gt 0 ]; do "$@" && return 0; sleep 2; t=$((t-2)); done; return 1
+}
+
+case "$1" in
+  verify)
+    FAIL=0; echo "Lockbox $VERSION — verify"
+    pgrep -f /Library/Lockbox/enforcer.sh >/dev/null && ok "enforcer service running" || bad "enforcer service not running"
+    grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && ok "Chrome profile active" || bad "Chrome profile not active (install Lockbox-Chrome.mobileconfig, then restart)"
+    for f in "$MP/com.google.Chrome.plist" "$MP"/*/com.google.Chrome.plist; do
+      [ -e "$f" ] && ls -lO "$f" | grep -q schg && bad "locked leftover file: $f (run install.sh again)"
+    done
+    grep -q DnsOverHttpsTemplates "$MP/com.google.Chrome.plist" 2>/dev/null && ok "Chrome uses its own encrypted DNS (1.1 profile)" || bad "Chrome profile is not the 1.1 version (re-install the profile, restart)"
+    UP="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
+    if grep -q picker "$UP" 2>/dev/null; then ok "uBlock Origin Lite filters locked"
+    elif [ -f "$UP" ]; then bad "Chrome profile is the SETUP version — paste the filters, then install Lockbox-Chrome.mobileconfig"
+    else bad "uBlock Origin Lite settings not applied (install the Lockbox – Chrome profile)"; fi
+    grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram)" || bad "hosts block missing"
+    n=0; for d in $(grep -v '^#' $BASE/youtube-domains.txt 2>/dev/null); do [ -f "/etc/resolver/$d" ] && n=$((n+1)); done
+    [ $n -gt 0 ] && ok "YouTube resolver block files: $n" || bad "YouTube resolver block files missing"
+    if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null)" ]; then ok "YouTube does not resolve for other apps"
+    else bad "YouTube still resolves for other apps — see README: 'YouTube works in other apps'"; fi
+    [ -n "$(dscacheutil -q host -a name www.google.com 2>/dev/null)" ] && ok "normal DNS works" || bad "normal DNS lookups failing"
+    [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(wc -l < $BASE/trust/teams.txt | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
+    if [ -x /usr/local/bin/nextdns ]; then
+      /usr/local/bin/nextdns status 2>/dev/null | grep -qi running && ok "NextDNS running" || bad "NextDNS installed but not running"
+    else echo "  – NextDNS not installed (optional)"; fi
+    [ -d /Applications/Lockbox.app ] && ok "Lockbox app installed" || bad "Lockbox app missing"
+    . $BASE/config 2>/dev/null
+    if [ "$ARMED" = 1 ]; then
+      ok "armed for $TARGET_USER (unlock wait $((UNLOCK_DELAY/60)) min, admin window $((ADMIN_WINDOW/60)) min)"
+      grep -q '^STATE=unlocked' $BASE/state || { is_admin "$TARGET_USER" && bad "$TARGET_USER is admin while locked" || ok "$TARGET_USER is Standard"; }
+    else echo "  – not armed yet (run: sudo lockboxctl arm <user>)"; fi
+    echo "  status: $(cat $BASE/status.txt 2>/dev/null)"
+    [ $FAIL = 0 ] && echo "All checks passed." || echo "Some checks failed."
+    exit $FAIL;;
+
+  nextdns)
+    ID="$2"; ND=/usr/local/bin/nextdns
+    if [ -z "$ID" ]; then
+      cat <<'TXT'
+NextDNS filters DNS on every network you join (optional — Lockbox's own blocks work without it).
+
+  1. Make a free account at https://nextdns.io
+  2. Open the Setup tab. Your config ID is the 6-character code next to "ID" (e.g. abc123).
+  3. Optional, in the NextDNS dashboard:
+       Parental Control → Websites, Apps & Games → add Instagram
+       Leave Settings → "Block Bypass Methods" OFF (it would break Chrome's encrypted DNS)
+  4. Install it on this Mac (while unlocked):   sudo lockboxctl nextdns abc123
+TXT
+      if [ -x "$ND" ]; then echo; echo "Current: $($ND status 2>/dev/null), config $($ND config 2>/dev/null | awk '/^config /{print $2}')"
+      else echo; echo "Current: not installed"; fi
+      exit 0
+    fi
+    need_root
+    [[ "$ID" =~ ^[a-z0-9]{6}$ ]] || { echo "That doesn't look like a NextDNS ID (6 letters/digits, e.g. abc123)."; exit 1; }
+    if [ ! -x "$ND" ]; then
+      echo "Downloading NextDNS…"
+      ARCH=$( [ "$(uname -m)" = arm64 ] && echo arm64 || echo amd64 )
+      URL=$(curl -fsSL https://api.github.com/repos/nextdns/nextdns/releases/latest \
+            | grep -oE '"browser_download_url": *"[^"]*darwin_(all|'$ARCH')\.tar\.gz"' | head -1 | sed -E 's/.*"(https[^"]+)"/\1/')
+      [ -n "$URL" ] || { echo "Could not find the NextDNS download. Check your internet connection."; exit 1; }
+      T=$(mktemp -d); curl -fsSL "$URL" -o "$T/n.tgz" && tar -xzf "$T/n.tgz" -C "$T"
+      mkdir -p /usr/local/bin
+      install -m 755 -o root -g wheel "$(find "$T" -type f -name nextdns | head -1)" "$ND"; rm -rf "$T"
+    fi
+    "$ND" uninstall >/dev/null 2>&1 || true
+    "$ND" install -config "$ID" -report-client-info -auto-activate >/dev/null
+    sleep 2; echo "NextDNS: $($ND status) with config $ID"
+    echo "Check it at https://test.nextdns.io (should say status: ok)";;
+
+  guide)
+    . $BASE/config 2>/dev/null
+    UP="$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist"
+    step() { echo; echo "NEXT: $1"; shift; for l in "$@"; do echo "  $l"; done; exit 0; }
+    echo "Lockbox $VERSION — setup guide"
+    pgrep -f /Library/Lockbox/enforcer.sh >/dev/null || step "Install Lockbox" \
+      "cd ~/Downloads/lockbox-mac && sudo bash install.sh"
+    if ! grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && [ ! -f "$UP" ]; then
+      step "Install the SETUP Chrome profile" \
+        "open /Library/Lockbox/Lockbox-Chrome-setup.mobileconfig" \
+        "System Settings → General → Device Management → double-click 'Lockbox – Chrome (setup)' → Install" \
+        "Then quit Chrome (⌘Q), reopen it, and run: lockboxctl guide"
+    fi
+    if ! grep -q picker "$UP" 2>/dev/null; then
+      step "Paste the YouTube filters, then lock them" \
+        "1. pbcopy < /Library/Lockbox/ubol-filters.txt" \
+        "2. Chrome → puzzle icon → uBlock Origin Lite → gear → Custom filters → paste → save" \
+        "3. Open a YouTube video: only the video and its title should show" \
+        "4. open /Library/Lockbox/Lockbox-Chrome.mobileconfig" \
+        "5. Device Management → double-click 'Lockbox – Chrome' → Install, then restart the Mac"
+    fi
+    [ -x /usr/local/bin/nextdns ] || echo "Optional: NextDNS isn't set up. Run 'lockboxctl nextdns' for instructions."
+    if [ "$ARMED" != 1 ]; then
+      "$0" verify >/dev/null 2>&1 || step "Fix what verify reports" "lockboxctl verify"
+      step "Arm it (removes your admin rights)" \
+        "Open the apps you use day to day first, then:" \
+        "sudo lockboxctl arm $(stat -f %Su /dev/console)" \
+        "Type ARM, then restart."
+    fi
+    echo; echo "All set — Lockbox is armed for $TARGET_USER. Status: $(cat $BASE/status.txt)"
+    echo "Need admin? Open the Lockbox app → Request unlock.";;
+
+  arm)
+    need_root
+    U="$2"; D="${3:-30}"; W="${4:-120}"
+    [ -n "$U" ] && id "$U" >/dev/null 2>&1 || { echo "usage: sudo lockboxctl arm <user> [delay_min] [window_min]"; exit 1; }
+    grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null || { echo "Chrome profile not active yet — install it and restart first (or Chrome would be closed)."; exit 1; }
+    grep -q picker "$MP/com.google.Chrome.extensions.ddkjiahejlhfcafbddmgiahcphecmpfh.plist" 2>/dev/null || { echo "Install the normal (locked) Lockbox – Chrome profile first — otherwise Chrome would be closed while locked."; exit 1; }
+    echo "This makes '$U' a Standard user. Getting admin back will need a $D-minute wait in the Lockbox app."
+    read -r -p "Type ARM to continue: " a; [ "$a" = ARM ] || { echo "cancelled"; exit 1; }
+    echo "Recording which apps are trusted (open the apps you use before this, ~1 min)…"
+    $BASE/trust-scan.sh "$U"
+    snapshot; writeconf "$U" 1 $((D*60)) $((W*60)) ""; setstate locked
+    sudo -K 2>/dev/null
+    wait_for 20 bash -c "! dsmemberutil checkmembership -U '$U' -G admin | grep -q 'is a member'" \
+      && echo "ARMED. '$U' is now Standard. Restart the Mac once." || echo "Armed, but '$U' still shows as admin — run: lockboxctl verify"
+    ;;
+
+  trust)
+    need_root; A="$2"; [ -d "$A" ] || { echo "usage: sudo lockboxctl trust /path/To.app"; exit 1; }
+    out=$(codesign -dv --verbose=4 "$A" 2>&1); team=$(sed -n 's/^TeamIdentifier=//p' <<<"$out"); cd=$(sed -n 's/^CDHash=//p' <<<"$out")
+    if [ -n "$team" ] && [ "$team" != "not set" ]; then echo "$team" >> $BASE/trust/teams.txt; echo "trusted developer $team"
+    else echo "$cd" >> $BASE/trust/cdhashes.txt; echo "trusted this exact build ($cd)"; fi
+    sort -u -o $BASE/trust/teams.txt $BASE/trust/teams.txt; sort -u -o $BASE/trust/cdhashes.txt $BASE/trust/cdhashes.txt
+    rm -f /var/run/lockbox-sig.txt;;
+
+  status) cat $BASE/status.txt; echo; cat $BASE/config; tail -n 15 /var/log/lockbox.log;;
+  version) echo "$VERSION";;
+  *) sed -n '2,8p' "$0" | sed 's/^# \{0,1\}//';;
+esac
