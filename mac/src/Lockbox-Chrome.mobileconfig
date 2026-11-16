@@ -49,8 +49,6 @@
 											<string>*://*.youtube.com</string>
 											<string>*://*.youtube-nocookie.com</string>
 										</array>
-										<key>toolbar_pin</key>
-										<string>force_unpinned</string>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
 									</dict>
@@ -63,8 +61,6 @@
 											<string>*://*.youtube.com</string>
 											<string>*://*.youtube-nocookie.com</string>
 										</array>
-										<key>toolbar_pin</key>
-										<string>force_unpinned</string>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
 									</dict>
@@ -77,8 +73,6 @@
 											<string>*://*.youtube.com</string>
 											<string>*://*.youtube-nocookie.com</string>
 										</array>
-										<key>toolbar_pin</key>
-										<string>force_unpinned</string>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
 									</dict>
@@ -139,7 +133,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>074CB6A7-5B7B-5DC2-A8FB-9A7B2C254E5C</string>
+			<string>C2813043-DE57-5B2D-BF1C-4500E752F9DE</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -157,7 +151,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>35AB14FE-3F29-55BA-8554-8AD47E3435A0</string>
+	<string>D4691A1B-A25F-5C7E-9D1B-E271AFAADC2F</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

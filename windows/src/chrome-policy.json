@@ -26,8 +26,7 @@
       "runtime_allowed_hosts": [
         "*://*.youtube.com",
         "*://*.youtube-nocookie.com"
-      ],
-      "toolbar_pin": "force_unpinned"
+      ]
     },
     "aklbieaecfoidlgjmiipikpgmhbcjoja": {
       "installation_mode": "force_installed",
@@ -35,8 +34,7 @@
       "runtime_allowed_hosts": [
         "*://*.youtube.com",
         "*://*.youtube-nocookie.com"
-      ],
-      "toolbar_pin": "force_unpinned"
+      ]
     },
     "ddkjiahejlhfcafbddmgiahcphecmpfh": {
       "installation_mode": "force_installed",
@@ -44,8 +42,7 @@
       "runtime_allowed_hosts": [
         "*://*.youtube.com",
         "*://*.youtube-nocookie.com"
-      ],
-      "toolbar_pin": "force_unpinned"
+      ]
     }
   },
   "IncognitoModeAvailability": 1,

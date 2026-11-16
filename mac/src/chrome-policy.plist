@@ -37,8 +37,6 @@
 				<string>*://*.youtube.com</string>
 				<string>*://*.youtube-nocookie.com</string>
 			</array>
-			<key>toolbar_pin</key>
-			<string>force_unpinned</string>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
 		</dict>
@@ -51,8 +49,6 @@
 				<string>*://*.youtube.com</string>
 				<string>*://*.youtube-nocookie.com</string>
 			</array>
-			<key>toolbar_pin</key>
-			<string>force_unpinned</string>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
 		</dict>
@@ -65,8 +61,6 @@
 				<string>*://*.youtube.com</string>
 				<string>*://*.youtube-nocookie.com</string>
 			</array>
-			<key>toolbar_pin</key>
-			<string>force_unpinned</string>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
 		</dict>

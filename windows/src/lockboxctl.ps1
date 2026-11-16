@@ -8,7 +8,7 @@
 #   status                        state, config and recent log
 param([string]$Cmd = 'help', [string]$A1, [string]$A2, [string]$A3)
 $ErrorActionPreference = 'SilentlyContinue'
-$Version = '1.3.0'
+$Version = '1.3.1'
 $App  = Join-Path $env:ProgramFiles 'Lockbox'
 $Data = Join-Path $env:ProgramData 'Lockbox'
 $ChromeKey = 'HKLM:\SOFTWARE\Policies\Google\Chrome'

@@ -38,8 +38,7 @@ PROTECTED_HOSTS = ["*://*.youtube.com", "*://*.instagram.com", "*://*.youtube-no
 ext_settings = {"*": {"runtime_blocked_hosts": PROTECTED_HOSTS}}
 for eid in EXTENSIONS:
     ext_settings[eid] = {"installation_mode": "force_installed", "update_url": STORE,
-                         "runtime_allowed_hosts": ["*://*.youtube.com", "*://*.youtube-nocookie.com"],
-                         "toolbar_pin": "force_unpinned"}
+                         "runtime_allowed_hosts": ["*://*.youtube.com", "*://*.youtube-nocookie.com"]}
 policy = {
     "URLBlocklist": URL_BLOCK,
     "URLAllowlist": URL_ALLOW,
@@ -62,7 +61,7 @@ ns = uuid.UUID("6f1c2a52-0b5e-4f0e-9a7e-1c0ffee10c4b")
 def profile(ubol_settings, name, desc):
     inner = {"PayloadType": "com.apple.ManagedClient.preferences", "PayloadVersion": 1,
              "PayloadIdentifier": "com.lockbox.chrome.prefs",
-             "PayloadUUID": str(uuid.uuid5(ns, "inner-" + name)).upper(),
+             "PayloadUUID": str(uuid.uuid5(ns, "inner-" + name + "-1.3.1")).upper(),
              "PayloadDisplayName": "Lockbox Chrome rules", "PayloadEnabled": True,
              "PayloadContent": {
                  "com.google.Chrome": {"Forced": [{"mcx_preference_settings": policy}]},
@@ -70,7 +69,7 @@ def profile(ubol_settings, name, desc):
              }}
     return {"PayloadType": "Configuration", "PayloadVersion": 1,
             "PayloadIdentifier": "com.lockbox.chrome",
-            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name)).upper(),
+            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.3.1")).upper(),
             "PayloadDisplayName": "Lockbox – Chrome" + ("" if name == "locked" else " (setup)"),
             "PayloadDescription": desc, "PayloadOrganization": "Lockbox",
             "PayloadScope": "System", "PayloadContent": [inner]}
