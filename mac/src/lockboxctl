@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.3.6
+VERSION=1.3.7
 BASE=/Library/Lockbox
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -47,7 +47,9 @@ case "$1" in
     else bad "uBlock Origin Lite settings not applied by macOS (its switches stay editable) — install the 1.3.3 profile, restart"; fi
     grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram)" || bad "hosts block missing"
     if [ -x /usr/local/bin/nextdns ]; then
-      /usr/local/bin/nextdns config 2>/dev/null | grep -q 'forwarder youtube.com' && ok "NextDNS blocks YouTube for other apps" || bad "NextDNS YouTube block missing (re-run: sudo lockboxctl nextdns YOUR_ID while unlocked)"
+      cfg=$(/usr/local/bin/nextdns config 2>/dev/null); miss=""
+      for d in $(grep -v '^#' $BASE/youtube-domains.txt); do grep -qE "forwarder ${d//./\\.}\\.?=" <<<"$cfg" || miss="$miss $d"; done
+      [ -z "$miss" ] && ok "NextDNS blocks all YouTube domains for other apps" || bad "NextDNS YouTube block missing for:$miss (fixes itself within a minute; or: sudo lockboxctl nextdns YOUR_ID)"
     fi
     if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null | awk '/address:/{print $2}' | grep -vE '^(0\.0\.0\.0|::)$')" ]; then ok "YouTube does not resolve for other apps"
     elif [ -x /usr/local/bin/nextdns ]; then bad "YouTube still resolves for other apps"; else echo "  – YouTube isn't blocked for other apps without NextDNS (lockboxctl nextdns)"; fi

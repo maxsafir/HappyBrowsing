@@ -172,7 +172,11 @@ nextdns_forwarders() { # -> args that send every YouTube domain to a dead DoH en
 }
 enforce_nextdns() {
   [ -x "$NEXTDNS" ] || return
-  if ! "$NEXTDNS" config 2>/dev/null | grep -qE 'forwarder youtube\.com\.?='; then
+  local cfg missing=0 d; cfg=$("$NEXTDNS" config 2>/dev/null)
+  for d in $(grep -v '^#' "$BASE/youtube-domains.txt" 2>/dev/null); do
+    grep -qF "forwarder $d.=" <<<"$cfg" || grep -qF "forwarder $d=" <<<"$cfg" || missing=1
+  done
+  if [ $missing = 1 ]; then
     local id; id=$("$NEXTDNS" config 2>/dev/null | awk '/^config /{print $2; exit}')
     if [ -n "$id" ]; then
       local args=(); while IFS= read -r a; do args+=("$a"); done < <(nextdns_forwarders)
@@ -229,7 +233,7 @@ write_status() {
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.3.6 started"
+log "enforcer 1.3.7 started"
 i=0
 while true; do
   load
