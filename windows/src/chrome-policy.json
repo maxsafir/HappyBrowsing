@@ -2,7 +2,8 @@
   "URLBlocklist": [
     "youtube.com",
     "instagram.com",
-    "cdninstagram.com"
+    "cdninstagram.com",
+    "reddit.com"
   ],
   "URLAllowlist": [
     "youtube.com/watch",
@@ -10,30 +11,35 @@
     "youtube.com/redirect",
     "accounts.youtube.com",
     "consent.youtube.com",
-    "youtube.com/signin"
+    "youtube.com/signin",
+    "reddit.com/r/",
+    "reddit.com/comments/",
+    "reddit.com/gallery/",
+    "reddit.com/media",
+    "reddit.com/login",
+    "reddit.com/account"
   ],
   "ExtensionSettings": {
     "*": {
       "runtime_blocked_hosts": [
         "*://*.youtube.com",
         "*://*.instagram.com",
-        "*://*.youtube-nocookie.com"
+        "*://*.youtube-nocookie.com",
+        "*://*.reddit.com"
       ]
     },
     "nppiofogichmlkadpbpkpojpidedifeh": {
       "installation_mode": "force_installed",
       "update_url": "https://clients2.google.com/service/update2/crx",
       "runtime_allowed_hosts": [
-        "*://*.youtube.com",
-        "*://*.youtube-nocookie.com"
+        "*://*.youtube.com"
       ]
     },
     "aklbieaecfoidlgjmiipikpgmhbcjoja": {
       "installation_mode": "force_installed",
       "update_url": "https://clients2.google.com/service/update2/crx",
       "runtime_allowed_hosts": [
-        "*://*.youtube.com",
-        "*://*.youtube-nocookie.com"
+        "*://*.youtube.com"
       ]
     },
     "ddkjiahejlhfcafbddmgiahcphecmpfh": {
@@ -41,7 +47,15 @@
       "update_url": "https://clients2.google.com/service/update2/crx",
       "runtime_allowed_hosts": [
         "*://*.youtube.com",
-        "*://*.youtube-nocookie.com"
+        "*://*.youtube-nocookie.com",
+        "*://*.reddit.com"
+      ]
+    },
+    "fllfmdjhnhhjokhdifhcdbpbfajfnhon": {
+      "installation_mode": "force_installed",
+      "update_url": "https://clients2.google.com/service/update2/crx",
+      "runtime_allowed_hosts": [
+        "*://*.reddit.com"
       ]
     }
   },

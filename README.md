@@ -8,6 +8,7 @@
 |---|---|---|
 | YouTube: video pages only, only in Chrome | ✔ | ✔ |
 | Video and title only (no search, comments, recommendations) | ✔ | ✔ |
+| Reddit: posts only, no feeds | ✔ | ✔ |
 | Instagram blocked everywhere | ✔ | ✔ |
 | Other browsers closed | ✔ | ✔ |
 | App guard (re-signed / unknown apps closed while locked) | ✔ code signatures | ✔ Authenticode |

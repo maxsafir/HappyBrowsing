@@ -1,4 +1,4 @@
-# Lockbox for Windows 1.3
+# Lockbox for Windows 1.4
 
 The Windows version of Lockbox: it blocks the distracting parts of the internet *and* takes away your own administrator rights, so you can't undo it in a moment of weakness. When you need admin (to install an app, change settings, run Windows Update), you request it in the Lockbox app and wait.
 
@@ -8,6 +8,7 @@ The Windows version of Lockbox: it blocks the distracting parts of the internet 
 |---|---|
 | YouTube: video pages only, Chrome only | Chrome policies in `HKLM\SOFTWARE\Policies\Google\Chrome`; YouTube domains sent to a dead resolver for every other app via the Name Resolution Policy Table (NRPT); Chrome alone uses its own encrypted DNS. |
 | Video and title only | uBlock Origin Lite holds the hiding filters; its editor is switched off by policy while locked. |
+| Reddit: posts only | Same Chrome rules as macOS: home and feeds blocked or hidden, posts open; Reddit Liberation force-installed. |
 | Instagram: gone | Chrome policy + the hosts file (+ NextDNS, optional). |
 | Chrome only | Firefox, Edge, Brave, Opera, Vivaldi, Arc and others are closed within 5 seconds, matched by file name **and** by Authenticode publisher. A `chrome.exe` not signed by Google (Chromium, modified builds) is closed too. |
 | App guard | While locked, programs running from places you can write to (your user folder, USB drives…) must be signed by a publisher already trusted, or be an exact file you trusted. Signatures are checked by the SYSTEM account, so importing your own certificate doesn't help. |

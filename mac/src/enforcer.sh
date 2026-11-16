@@ -233,7 +233,7 @@ write_status() {
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.3.7 started"
+log "enforcer 1.4.0 started"
 i=0
 while true; do
   load

@@ -26,6 +26,7 @@
 				<string>*://*.youtube.com</string>
 				<string>*://*.instagram.com</string>
 				<string>*://*.youtube-nocookie.com</string>
+				<string>*://*.reddit.com</string>
 			</array>
 		</dict>
 		<key>aklbieaecfoidlgjmiipikpgmhbcjoja</key>
@@ -35,7 +36,6 @@
 			<key>runtime_allowed_hosts</key>
 			<array>
 				<string>*://*.youtube.com</string>
-				<string>*://*.youtube-nocookie.com</string>
 			</array>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
@@ -48,6 +48,18 @@
 			<array>
 				<string>*://*.youtube.com</string>
 				<string>*://*.youtube-nocookie.com</string>
+				<string>*://*.reddit.com</string>
+			</array>
+			<key>update_url</key>
+			<string>https://clients2.google.com/service/update2/crx</string>
+		</dict>
+		<key>fllfmdjhnhhjokhdifhcdbpbfajfnhon</key>
+		<dict>
+			<key>installation_mode</key>
+			<string>force_installed</string>
+			<key>runtime_allowed_hosts</key>
+			<array>
+				<string>*://*.reddit.com</string>
 			</array>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
@@ -59,7 +71,6 @@
 			<key>runtime_allowed_hosts</key>
 			<array>
 				<string>*://*.youtube.com</string>
-				<string>*://*.youtube-nocookie.com</string>
 			</array>
 			<key>update_url</key>
 			<string>https://clients2.google.com/service/update2/crx</string>
@@ -75,12 +86,19 @@
 		<string>accounts.youtube.com</string>
 		<string>consent.youtube.com</string>
 		<string>youtube.com/signin</string>
+		<string>reddit.com/r/</string>
+		<string>reddit.com/comments/</string>
+		<string>reddit.com/gallery/</string>
+		<string>reddit.com/media</string>
+		<string>reddit.com/login</string>
+		<string>reddit.com/account</string>
 	</array>
 	<key>URLBlocklist</key>
 	<array>
 		<string>youtube.com</string>
 		<string>instagram.com</string>
 		<string>cdninstagram.com</string>
+		<string>reddit.com</string>
 	</array>
 </dict>
 </plist>

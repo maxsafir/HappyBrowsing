@@ -23,22 +23,34 @@ EXTENSIONS = [
     "nppiofogichmlkadpbpkpojpidedifeh",  # Mono for YouTube (CSS-only: hides feed, sidebar, Shorts shelves, end cards)
     "aklbieaecfoidlgjmiipikpgmhbcjoja",  # YouTube Recommendation Blocker (backup)
     "ddkjiahejlhfcafbddmgiahcphecmpfh",  # uBlock Origin Lite: holds the custom hiding filters (src/ubol-filters.txt)
+    "fllfmdjhnhhjokhdifhcdbpbfajfnhon",  # Reddit Liberation: Feed Blocker (hides Reddit feeds, posts stay readable)
 ]
+# Which sites each locked extension may run on (all other extensions are kept off these sites).
+EXT_HOSTS = {
+    "nppiofogichmlkadpbpkpojpidedifeh": ["*://*.youtube.com"],
+    "aklbieaecfoidlgjmiipikpgmhbcjoja": ["*://*.youtube.com"],
+    "ddkjiahejlhfcafbddmgiahcphecmpfh": ["*://*.youtube.com", "*://*.youtube-nocookie.com", "*://*.reddit.com"],
+    "fllfmdjhnhhjokhdifhcdbpbfajfnhon": ["*://*.reddit.com"],
+}
 UBOL = "ddkjiahejlhfcafbddmgiahcphecmpfh"
 UBOL_LOCKED = {"disabledFeatures": ["dashboard", "develop", "filteringMode", "picker", "zapper"],
                "noFiltering": ["-*"], "disableFirstRunPage": True}
 UBOL_SETUP = {"disabledFeatures": ["filteringMode", "zapper"], "noFiltering": ["-*"], "disableFirstRunPage": True}
 # Sites blocked in Chrome. Paths in URL_ALLOW win over the broader block.
-URL_BLOCK = ["youtube.com", "instagram.com", "cdninstagram.com"]
+URL_BLOCK = ["youtube.com", "instagram.com", "cdninstagram.com", "reddit.com"]
 URL_ALLOW = ["youtube.com/watch", "youtube.com/embed", "youtube.com/redirect",
-             "accounts.youtube.com", "consent.youtube.com", "youtube.com/signin"]
+             "accounts.youtube.com", "consent.youtube.com", "youtube.com/signin",
+             # Reddit: posts and subreddit pages open (feeds hidden by Reddit Liberation + uBOL);
+             # home, /popular, /all, search and profiles are blocked.
+             "reddit.com/r/", "reddit.com/comments/", "reddit.com/gallery/", "reddit.com/media",
+             "reddit.com/login", "reddit.com/account"]
 # Other extensions are not allowed to run on these sites (so nothing can undo the hiding).
-PROTECTED_HOSTS = ["*://*.youtube.com", "*://*.instagram.com", "*://*.youtube-nocookie.com"]
+PROTECTED_HOSTS = ["*://*.youtube.com", "*://*.instagram.com", "*://*.youtube-nocookie.com", "*://*.reddit.com"]
 
 ext_settings = {"*": {"runtime_blocked_hosts": PROTECTED_HOSTS}}
 for eid in EXTENSIONS:
     ext_settings[eid] = {"installation_mode": "force_installed", "update_url": STORE,
-                         "runtime_allowed_hosts": ["*://*.youtube.com", "*://*.youtube-nocookie.com"]}
+                         "runtime_allowed_hosts": EXT_HOSTS.get(eid, [])}
 policy = {
     "URLBlocklist": URL_BLOCK,
     "URLAllowlist": URL_ALLOW,
@@ -62,12 +74,12 @@ def profile(ubol_settings, name, desc):
     def payload(domain, settings, tag):
         return {"PayloadType": "com.apple.ManagedClient.preferences", "PayloadVersion": 1,
                 "PayloadIdentifier": "com.lockbox.chrome.prefs." + tag,
-                "PayloadUUID": str(uuid.uuid5(ns, tag + "-" + name + "-1.3.3")).upper(),
+                "PayloadUUID": str(uuid.uuid5(ns, tag + "-" + name + "-1.4.0")).upper(),
                 "PayloadDisplayName": "Lockbox " + tag, "PayloadEnabled": True,
                 "PayloadContent": {domain: {"Forced": [{"mcx_preference_settings": settings}]}}}
     return {"PayloadType": "Configuration", "PayloadVersion": 1,
             "PayloadIdentifier": "com.lockbox.chrome",
-            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.3.3")).upper(),
+            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.4.0")).upper(),
             "PayloadDisplayName": "Lockbox – Chrome" + ("" if name == "locked" else " (setup)"),
             "PayloadDescription": desc, "PayloadOrganization": "Lockbox",
             "PayloadScope": "System",

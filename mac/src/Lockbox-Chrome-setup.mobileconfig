@@ -38,6 +38,7 @@
 											<string>*://*.youtube.com</string>
 											<string>*://*.instagram.com</string>
 											<string>*://*.youtube-nocookie.com</string>
+											<string>*://*.reddit.com</string>
 										</array>
 									</dict>
 									<key>aklbieaecfoidlgjmiipikpgmhbcjoja</key>
@@ -47,7 +48,6 @@
 										<key>runtime_allowed_hosts</key>
 										<array>
 											<string>*://*.youtube.com</string>
-											<string>*://*.youtube-nocookie.com</string>
 										</array>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
@@ -60,6 +60,18 @@
 										<array>
 											<string>*://*.youtube.com</string>
 											<string>*://*.youtube-nocookie.com</string>
+											<string>*://*.reddit.com</string>
+										</array>
+										<key>update_url</key>
+										<string>https://clients2.google.com/service/update2/crx</string>
+									</dict>
+									<key>fllfmdjhnhhjokhdifhcdbpbfajfnhon</key>
+									<dict>
+										<key>installation_mode</key>
+										<string>force_installed</string>
+										<key>runtime_allowed_hosts</key>
+										<array>
+											<string>*://*.reddit.com</string>
 										</array>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
@@ -71,7 +83,6 @@
 										<key>runtime_allowed_hosts</key>
 										<array>
 											<string>*://*.youtube.com</string>
-											<string>*://*.youtube-nocookie.com</string>
 										</array>
 										<key>update_url</key>
 										<string>https://clients2.google.com/service/update2/crx</string>
@@ -87,12 +98,19 @@
 									<string>accounts.youtube.com</string>
 									<string>consent.youtube.com</string>
 									<string>youtube.com/signin</string>
+									<string>reddit.com/r/</string>
+									<string>reddit.com/comments/</string>
+									<string>reddit.com/gallery/</string>
+									<string>reddit.com/media</string>
+									<string>reddit.com/login</string>
+									<string>reddit.com/account</string>
 								</array>
 								<key>URLBlocklist</key>
 								<array>
 									<string>youtube.com</string>
 									<string>instagram.com</string>
 									<string>cdninstagram.com</string>
+									<string>reddit.com</string>
 								</array>
 							</dict>
 						</dict>
@@ -108,7 +126,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>8D49520A-A02B-53E6-9D77-370A75403E26</string>
+			<string>629C919A-3767-5375-A744-8D13634A2F93</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -147,7 +165,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>EEE6F568-F1F8-5D9E-B06C-7C7A584F2DB9</string>
+			<string>90DC9324-A9D0-582D-B1E9-07BB1F3F9208</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -165,7 +183,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>5830EBD6-E067-50D8-8EB8-67FE67B76BF5</string>
+	<string>F2C9403B-8931-5697-AC0F-FBD5CFC2AE51</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

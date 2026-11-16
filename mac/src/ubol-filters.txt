@@ -18,3 +18,11 @@ www.youtube.com##.ytp-ce-element
 www.youtube.com##.ytp-autonav-endscreen-upnext-container
 www.youtube.com##.ytp-fullscreen-grid
 www.youtube.com##.ytp-pause-overlay
+! Reddit: posts readable, feeds and recommendations hidden (backup for Reddit Liberation).
+www.reddit.com##shreddit-feed
+www.reddit.com###left-sidebar-container
+www.reddit.com##reddit-sidebar-nav
+www.reddit.com###right-sidebar-container
+www.reddit.com##pdp-right-rail
+www.reddit.com##reddit-search-large
+www.reddit.com##shreddit-related-community-posts

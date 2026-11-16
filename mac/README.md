@@ -1,10 +1,11 @@
-# Lockbox for macOS 1.3.6
+# Lockbox for macOS 1.4
 
 **A commitment device for your Mac.** Lockbox blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin (to install an app, run `sudo`, update macOS), you request it and wait. The wait is the point.
 
 | What | How |
 |---|---|
 | YouTube: video pages only, Chrome only | No home feed, Shorts, search, channels or recommendations. Videos opened from Google still play in Chrome. YouTube doesn't load in any other app (VS Code's browser, other apps' web views, scripts). |
+| Reddit: posts only | Home, Popular, All, search and profiles blocked in Chrome; subreddit feeds hidden by Reddit Liberation (force-installed, can't be switched off) and uBOL filters. Posts opened from Google or links work. Other extensions can't run on Reddit. |
 | Instagram: gone | Blocked in Chrome, in `/etc/hosts`, and (optionally) by NextDNS on every network. |
 | Chrome only | Safari, Firefox, Brave, Edge, Arc and ~30 other browsers are closed within 5 seconds, matched by code signature, so renaming doesn't help. |
 | App guard | While locked, only apps from developers already on your Mac can run. Re-signed or home-made browsers are closed. |
