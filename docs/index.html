@@ -88,10 +88,17 @@
   .core p{color:#C9D1DA;margin:0}
 
   /* install steps (a real sequence, so numbered) */
-  ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;max-width:820px}
+  .platform{counter-reset:s;max-width:820px}
+  .group{margin:28px 0 8px}
+  .group>h3{font-weight:800;font-stretch:112%;font-size:24px;letter-spacing:-.01em;margin:0 0 4px}
+  ol.steps{list-style:none;margin:0;padding:0}
+  ol.steps h4{margin:0 0 6px;font-size:19px;font-weight:750}
+  .aside{margin:36px 0 0;padding:22px 24px;border:2px solid var(--ink);border-radius:12px;background:var(--plate)}
+  .aside h3{margin:0 0 8px;font-size:20px}
+  .aside p{font-size:17px;color:#2E3846;margin:0 0 12px}
+  .aside p:last-child{margin:12px 0 0}
   ol.steps>li{counter-increment:s;display:grid;grid-template-columns:64px 1fr;gap:6px;padding:22px 0;border-bottom:1px solid var(--rule)}
   ol.steps>li::before{content:counter(s);font-weight:300;font-stretch:62%;font-size:54px;line-height:.9;color:var(--brass)}
-  ol.steps h3{margin:0 0 6px;font-size:20px;font-weight:750}
   ol.steps p{margin:0 0 10px;font-size:17px;color:#2E3846}
   .code{position:relative;background:var(--ink);color:#E9EEF3;border-radius:8px;padding:14px 92px 14px 16px;font-family:var(--mono);font-size:14.5px;overflow-x:auto;white-space:pre}
   .copy{position:absolute;top:8px;right:8px;font:600 13px var(--display);background:#2C3746;color:#E9EEF3;border:1px solid #435064;border-radius:5px;padding:6px 10px;cursor:pointer}
@@ -102,11 +109,6 @@
   .platforms button{font:inherit;font-weight:650;font-size:16px;padding:10px 22px;border:0;background:transparent;color:var(--ink);cursor:pointer}
   .platforms button[aria-selected="true"]{background:var(--ink);color:var(--plate)}
 
-  /* limits table */
-  table{border-collapse:collapse;width:100%;max-width:900px;font-size:17px}
-  th,td{text-align:left;padding:14px 16px 14px 0;border-bottom:1px solid var(--rule);vertical-align:top}
-  th{font-weight:750;border-bottom:2px solid var(--ink)}
-  td:last-child{color:var(--muted)}
 
   footer{border-top:2px solid var(--ink);padding:36px 0 60px;color:var(--muted);font-size:15px}
   footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
@@ -132,6 +134,7 @@
       <a class="hide-sm" href="#blocks">What it blocks</a>
       <a class="hide-sm" href="#how">How it works</a>
       <a href="#install">Install</a>
+      <a class="hide-sm" href="#use">Using it</a>
     </nav>
   </header>
 
@@ -206,54 +209,46 @@
 
 <section id="install">
   <div class="wrap">
-    <h2>Install in about ten minutes.</h2>
-    <p class="intro">You need an admin account for setup and Google Chrome. NextDNS is optional.</p>
+    <h2>Install in about fifteen minutes.</h2>
+    <p class="intro">You need an admin account for setup and Google Chrome. Every step is below.</p>
     <div class="platforms" role="tablist" aria-label="Platform">
       <button role="tab" aria-selected="true" aria-controls="steps-mac" id="tab-mac" type="button">Mac</button>
       <button role="tab" aria-selected="false" aria-controls="steps-win" id="tab-win" type="button">Windows</button>
     </div>
-    <ol class="steps" id="steps-mac" role="tabpanel" aria-labelledby="tab-mac">
-      <li><div><h3>Download and run the installer</h3><p><a href="downloads/lockbox-mac.zip" download>Download lockbox-mac.zip</a>, unzip it into Downloads, then in Terminal. It asks for a NextDNS ID; press Enter to skip.</p>
-        <div class="code"><span>cd ~/Downloads/lockbox-mac &amp;&amp; sudo bash install.sh</span><button class="copy" type="button">Copy</button></div></div></li>
-      <li><div><h3>Follow the guide</h3><p>It checks what's done and prints the exact next step: approving the Chrome profile, pasting the YouTube filters, then locking them. Run it again after each step.</p>
-        <div class="code"><span>lockboxctl guide</span><button class="copy" type="button">Copy</button></div></div></li>
-      <li><div><h3>Add NextDNS, if you want it</h3><p>Shows how to get a free config ID, then sets it up.</p>
-        <div class="code"><span>lockboxctl nextdns</span><button class="copy" type="button">Copy</button></div></div></li>
-      <li><div><h3>Arm it</h3><p>This removes your admin rights. Add a wait in minutes to change the 30-minute default.</p>
-        <div class="code"><span>sudo lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li>
-    </ol>
-    <ol class="steps" id="steps-win" role="tabpanel" aria-labelledby="tab-win" hidden>
-      <li><div><h3>Download and run the installer</h3><p><a href="downloads/lockbox-windows.zip" download>Download lockbox-windows.zip</a> and unzip it into Downloads. Right-click Start, choose Terminal (Admin), then:</p>
-        <div class="code"><span>cd $HOME\Downloads\lockbox-windows; powershell -ExecutionPolicy Bypass -File install.ps1</span><button class="copy" type="button">Copy</button></div></div></li>
-      <li><div><h3>Follow the guide</h3><p>In a new admin Terminal. It walks you through pasting the YouTube filters and locking them, then checks every layer.</p>
-        <div class="code"><span>lockboxctl guide</span><button class="copy" type="button">Copy</button></div></div></li>
-      <li><div><h3>Turn on BitLocker or Device encryption</h3><p>Without it, someone with a USB stick and physical access could edit files from outside Windows. Settings, then Privacy &amp; security, then Device encryption.</p></div></li>
-      <li><div><h3>Arm it</h3><p>Removes your administrator rights. Sign out and back in afterwards.</p>
-        <div class="code"><span>lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li>
-    </ol>
+    <div class="platform" id="steps-mac" role="tabpanel" aria-labelledby="tab-mac"><div class="group"><h3>Install Lockbox</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/lockbox-mac.zip" download>lockbox-mac.zip</a> and double-click it so a <b>lockbox-mac</b> folder appears in Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Open Terminal and paste this. Type your Mac password when asked (nothing shows while you type). It asks for a NextDNS ID: paste yours, or press Enter to skip.</p><div class="code"><span>cd ~/Downloads/lockbox-mac &amp;&amp; sudo bash install.sh</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Install the setup profile</h4><p>Open System Settings, then General, then Device Management. Double-click <b>Lockbox – Chrome (setup)</b> and click Install. Then quit Chrome with ⌘Q and open it again. Within a minute uBlock Origin Lite appears in the puzzle-piece menu.</p></div></li><li><div><h4>Copy the YouTube filters</h4><p>In Terminal:</p><div class="code"><span>pbcopy &lt; /Library/Lockbox/ubol-filters.txt</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Paste the filters</h4><p>In Chrome, click the puzzle icon, then uBlock Origin Lite, then the gear. Open <b>Custom filters</b>, paste, and save. Open any YouTube video from Google: you should see only the video and its title.</p></div></li><li><div><h4>Lock the filters</h4><p>Run this, then in Device Management double-click <b>Lockbox – Chrome</b> and click Install. It replaces the setup profile and switches off uBlock's editor. Restart the Mac.</p><div class="code"><span>open /Library/Lockbox/Lockbox-Chrome.mobileconfig</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Check and arm</h3><ol class="steps"><li><div><h4>Check every layer</h4><p>Every line should have a green tick.</p><div class="code"><span>lockboxctl verify</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Arm it</h4><p>Keep the apps you use open, then run this with your Mac username. Type ARM to confirm, then restart. From now on your account is a Standard user.</p><div class="code"><span>sudo lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every Wi-Fi network and keeps YouTube out of every app except Chrome. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or later (while unlocked):</p><div class="code"><span>sudo lockboxctl nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
+    <div class="platform" id="steps-win" role="tabpanel" aria-labelledby="tab-win" hidden><div class="group"><h3>Install Lockbox</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/lockbox-windows.zip" download>lockbox-windows.zip</a>, right-click it, choose Extract All, and extract it into Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Right-click Start and choose <b>Terminal (Admin)</b>, then paste this. It asks for a NextDNS ID: paste yours, or press Enter to skip.</p><div class="code"><span>cd $HOME\Downloads\lockbox-windows; powershell -ExecutionPolicy Bypass -File install.ps1</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Open the filter editor</h4><p>Close Terminal and open a new <b>Terminal (Admin)</b>, then run this. It also copies the YouTube filters to your clipboard.</p><div class="code"><span>lockboxctl filters open</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Paste the filters</h4><p>Quit Chrome fully, including from the system tray, and open it again. Click the puzzle icon, then uBlock Origin Lite, then the gear. Open <b>Custom filters</b>, paste, and save. Open any YouTube video from Google: you should see only the video and its title.</p></div></li><li><div><h4>Lock the filters</h4><p>Then restart Chrome. The Custom filters pane is gone and the filters stay.</p><div class="code"><span>lockboxctl filters lock</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Check and arm</h3><ol class="steps"><li><div><h4>Turn on encryption</h4><p>Open Settings, then Privacy &amp; security, then <b>Device encryption</b> (or BitLocker on Windows Pro) and turn it on.</p></div></li><li><div><h4>Check every layer</h4><p>Every line should say OK.</p><div class="code"><span>lockboxctl verify</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Arm it</h4><p>Keep the apps you use open, then run this with your Windows username. Type ARM to confirm, then sign out and back in. From now on your account is a Standard user.</p><div class="code"><span>lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every network. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or later in Terminal (Admin) while unlocked:</p><div class="code"><span>lockboxctl nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
   </div>
 </section>
 
-<section id="limits">
+<section id="use">
   <div class="wrap">
-    <h2>What it won't stop.</h2>
-    <p class="intro">Lockbox is built against impulses, not against a determined version of you with an afternoon free.</p>
-    <table>
-      <thead><tr><th>Way around</th><th>What it costs you</th></tr></thead>
-      <tbody>
-        <tr><td>Request an unlock, then remove Lockbox as admin</td><td>The 30-minute wait. That's the design.</td></tr>
-        <tr><td>Erase the Mac from Recovery, or reset the PC</td><td>Everything on the disk</td></tr>
-        <tr><td>Windows without BitLocker: edit files from a USB stick</td><td>A second computer and 15+ minutes</td></tr>
-        <tr><td>A Short opened as a regular video link</td><td>Plays</td></tr>
-        <tr><td>Your phone or another device</td><td>Not covered</td></tr>
-              </tbody>
-    </table>
+    <h2>Living with it.</h2>
+    <p class="intro">Open <b>Lockbox</b> from Applications on a Mac, or from the Start menu on Windows.</p>
+    <div class="ledger">
+      <div>
+        <h3>When you need admin</h3>
+        <ul>
+          <li class="yes"><span>1</span><span>Click <b>Request unlock</b><small>Your account stays Standard for the next 30 minutes</small></span></li>
+          <li class="yes"><span>2</span><span>After the wait you're an administrator<small>Install apps, run sudo or admin prompts, update the system</small></span></li>
+          <li class="yes"><span>3</span><span>Click <b>Re-lock now</b> when you're done<small>Or it re-locks itself after 2 hours</small></span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Good to know</h3>
+        <ul>
+          <li class="yes"><span>✓</span><span>Changed your mind during the wait?<small>Click Cancel unlock request</small></span></li>
+          <li class="yes"><span>✓</span><span>YouTube and Instagram stay blocked while unlocked</span></li>
+          <li class="yes"><span>✓</span><span>Apps you install while unlocked are trusted automatically when you re-lock</span></li>
+          <li class="yes"><span>✓</span><span>Unlock about once a month so system updates can install</span></li>
+        </ul>
+      </div>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <span>Lockbox 1.3 for macOS and Windows. Uses <a href="https://nextdns.io">NextDNS</a>, uBlock Origin Lite and Mono for YouTube.</span>
+    <span>Lockbox 1.3.7 for macOS and Windows. Uses <a href="https://nextdns.io">NextDNS</a>, uBlock Origin Lite and Mono for YouTube.</span>
     <a href="https://github.com/maxsafir/lockbox">GitHub</a>
   </div>
 </footer>
