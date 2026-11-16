@@ -1,10 +1,10 @@
-# Records which programs may run from user-writable folders while Lockbox is locked.
+# Records which programs may run from user-writable folders while HappyBrowsing is locked.
 #   trust-scan.ps1             running programs + already-trusted list (used on every re-lock)
 #   trust-scan.ps1 <user>      also scans that user's AppData (used when arming)
 # Trusted = signed (as judged by SYSTEM) by a publisher found here, or (unsigned) this exact file hash.
 param([string]$User)
 $ErrorActionPreference = 'SilentlyContinue'
-$Trust = Join-Path $env:ProgramData 'Lockbox\trust'
+$Trust = Join-Path $env:ProgramData 'HappyBrowsing\trust'
 New-Item -ItemType Directory -Force -Path $Trust | Out-Null
 $pubs = [Collections.Generic.HashSet[string]]::new()
 $hashes = [Collections.Generic.HashSet[string]]::new()

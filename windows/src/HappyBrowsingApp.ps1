@@ -1,13 +1,13 @@
-# Lockbox app for Windows: request an unlock, cancel it, or re-lock. Runs as the normal user.
+# HappyBrowsing app for Windows: request an unlock, cancel it, or re-lock. Runs as the normal user.
 Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-$Data = Join-Path $env:ProgramData 'Lockbox'
-function Get-Status { try { (Get-Content "$Data\status.txt" -ErrorAction Stop | Select-Object -First 1).Trim() } catch { 'Lockbox is not running.' } }
+$Data = Join-Path $env:ProgramData 'HappyBrowsing'
+function Get-Status { try { (Get-Content "$Data\status.txt" -ErrorAction Stop | Select-Object -First 1).Trim() } catch { 'HappyBrowsing is not running.' } }
 $cfg = try { Get-Content "$Data\config.json" -Raw | ConvertFrom-Json } catch { $null }
 $delay = if ($cfg) { [int]($cfg.UnlockDelay / 60) } else { 30 }
 $window = if ($cfg) { [int]($cfg.AdminWindow / 60) } else { 120 }
 
 $f = New-Object Windows.Forms.Form
-$f.Text = 'Lockbox'; $f.Width = 460; $f.Height = 250; $f.StartPosition = 'CenterScreen'
+$f.Text = 'HappyBrowsing'; $f.Width = 460; $f.Height = 250; $f.StartPosition = 'CenterScreen'
 $f.FormBorderStyle = 'FixedDialog'; $f.MaximizeBox = $false; $f.Font = New-Object Drawing.Font('Segoe UI', 10)
 $status = New-Object Windows.Forms.Label
 $status.Left = 20; $status.Top = 18; $status.Width = 410; $status.Height = 28

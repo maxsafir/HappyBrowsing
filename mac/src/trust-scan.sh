@@ -1,9 +1,9 @@
 #!/bin/bash
-# Records which apps are trusted to run while Lockbox is locked.
+# Records which apps are trusted to run while HappyBrowsing is locked.
 #   trust-scan.sh            scan /Applications and /Library (used on every re-lock)
 #   trust-scan.sh <user>     also scan that user's ~/Applications and ~/Library (used when arming)
 # Trusted = signed by a developer ID found here, or (for ad-hoc/unsigned apps) this exact build.
-BASE=/Library/Lockbox
+BASE=/Library/HappyBrowsing
 T=$BASE/trust
 mkdir -p "$T"
 U="$1"
@@ -29,7 +29,7 @@ record() {
 # Skip private data folders (avoids macOS privacy prompts; no apps live there).
 find "${DIRS[@]}" \( -path '*/Library/Containers' -o -path '*/Library/Group Containers' -o -path '*/Library/Mail' \
      -o -path '*/Library/Messages' -o -path '*/Library/Safari' -o -path '*/Library/Mobile Documents' \
-     -o -path '*/Library/CloudStorage' -o -path '*/Library/Caches' -o -path '/Library/Lockbox' \) -prune \
+     -o -path '*/Library/CloudStorage' -o -path '*/Library/Caches' -o -path '/Library/HappyBrowsing' \) -prune \
      -o -name '*.app' -type d -print 2>/dev/null | while IFS= read -r app; do record "$app"; done
 
 # Anything running right now is trusted too.
@@ -37,6 +37,6 @@ ps -axo comm= | grep '\.app/Contents/MacOS/' | while IFS= read -r p; do record "
 
 sort -u "$teams" | grep -v '^$' > "$T/teams.txt"
 sort -u "$hashes" | grep -v '^$' > "$T/cdhashes.txt"
-rm -f "$teams" "$hashes" /var/run/lockbox-sig.txt
+rm -f "$teams" "$hashes" /var/run/happybrowsing-sig.txt
 chown -R root:wheel "$T"; chmod 755 "$T"; chmod 644 "$T"/*.txt
 echo "trusted: $(wc -l < "$T/teams.txt" | tr -d ' ') developers, $(wc -l < "$T/cdhashes.txt" | tr -d ' ') ad-hoc builds"

@@ -1,20 +1,20 @@
 #!/bin/bash
-# Lockbox enforcer 1.3 — runs as root from launchd (com.lockbox.enforcer), every 5 seconds.
+# HappyBrowsing enforcer — runs as root from launchd (com.happybrowsing.enforcer), every 5 seconds.
 #   locked   -> target user is Standard, every block enforced, app guard on
 #   pending  -> unlock requested, still locked, waits UNLOCK_DELAY seconds
 #   unlocked -> target user is admin (blocks stay on, app guard off) until Re-lock or ADMIN_WINDOW ends
 
-BASE=/Library/Lockbox
+BASE=/Library/HappyBrowsing
 CONF=$BASE/config
 STATEF=$BASE/state
 INBOX=$BASE/inbox
 STATUS=$BASE/status.txt
 TRUST=$BASE/trust
-LOG=/var/log/lockbox.log
+LOG=/var/log/happybrowsing.log
 HOSTS=/etc/hosts
 MP="/Library/Managed Preferences"
 NEXTDNS=/usr/local/bin/nextdns
-SIGCACHE=/var/run/lockbox-sig.txt
+SIGCACHE=/var/run/happybrowsing-sig.txt
 MARK=nppiofogichmlkadpbpkpojpidedifeh
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
 
@@ -75,11 +75,11 @@ enforce_hosts() {
   local want cur
   [ -f "$BASE/hosts-block.txt" ] || return
   want=$(cat "$BASE/hosts-block.txt")
-  cur=$(awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}f' "$HOSTS")
+  cur=$(awk '/^# >>> happybrowsing/{f=1;next}/^# <<< happybrowsing/{f=0;next}f' "$HOSTS")
   if [ "$cur" != "$want" ]; then
-    awk '/^# >>> lockbox/{f=1;next}/^# <<< lockbox/{f=0;next}!f' "$HOSTS" | grep -v '# lockbox-test' > "$HOSTS.lockbox.tmp"
-    { echo "# >>> lockbox"; printf '%s\n' "$want"; echo "# <<< lockbox"; } >> "$HOSTS.lockbox.tmp"
-    cat "$HOSTS.lockbox.tmp" > "$HOSTS"; rm -f "$HOSTS.lockbox.tmp"
+    awk '/^# >>> (happybrowsing|lockbox)$/{f=1;next}/^# <<< (happybrowsing|lockbox)$/{f=0;next}!f' "$HOSTS" | grep -v '# lockbox-test' > "$HOSTS.happybrowsing.tmp"
+    { echo "# >>> happybrowsing"; printf '%s\n' "$want"; echo "# <<< happybrowsing"; } >> "$HOSTS.happybrowsing.tmp"
+    cat "$HOSTS.happybrowsing.tmp" > "$HOSTS"; rm -f "$HOSTS.happybrowsing.tmp"
     chown root:wheel "$HOSTS"; chmod 644 "$HOSTS"
     dscacheutil -flushcache; killall -HUP mDNSResponder 2>/dev/null
     log "hosts block re-applied"
@@ -109,7 +109,7 @@ ubol_open() { # true only if uBOL's settings are applied AND it's the setup (edi
   return 1
 }
 check_chrome() {
-  # OK = Lockbox profile active, and (while locked) the LOCKED variant, so uBOL's filter editor stays closed.
+  # OK = HappyBrowsing profile active, and (while locked) the LOCKED variant, so uBOL's filter editor stays closed.
   if grep -q "$MARK" "$MP/com.google.Chrome.plist" 2>/dev/null && \
      { [ "$STATE" = unlocked ] || ! ubol_open; }; then
     [ "$CHROME_OK" = 0 ] && log "chrome profile present again"; CHROME_OK=1
@@ -192,7 +192,7 @@ enforce_nextdns() {
   [ $need = 1 ] && { "$NEXTDNS" activate >/dev/null 2>&1; log "nextdns re-activated"; }
 }
 
-# ---------- requests from the Lockbox app ----------
+# ---------- requests from the HappyBrowsing app ----------
 relocked() { # runs once whenever we go back to locked
   ( "$BASE/trust-scan.sh" >> "$LOG" 2>&1 ) &   # trust apps installed during the unlock
 }
@@ -227,13 +227,13 @@ write_status() {
     unlocked) msg="UNLOCKED (admin) — auto re-lock in $(( (RELOCK_AT-now+59)/60 )) min";;
   esac
   [ "$ARMED" = 1 ] || msg="$msg (not armed yet)"
-  [ "$CHROME_OK" = 1 ] || msg="$msg — Chrome closed: install the normal Lockbox – Chrome profile"
+  [ "$CHROME_OK" = 1 ] || msg="$msg — Chrome closed: install the normal HappyBrowsing – Chrome profile"
   echo "$msg" > "$STATUS.tmp"; mv -f "$STATUS.tmp" "$STATUS"; chmod 644 "$STATUS"
 }
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.4.0 started"
+log "enforcer 1.5.0 started"
 i=0
 while true; do
   load

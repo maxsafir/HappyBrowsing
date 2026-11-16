@@ -118,7 +118,7 @@
 				</dict>
 			</dict>
 			<key>PayloadDisplayName</key>
-			<string>Lockbox chrome</string>
+			<string>HappyBrowsing chrome</string>
 			<key>PayloadEnabled</key>
 			<true/>
 			<key>PayloadIdentifier</key>
@@ -126,7 +126,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>BCA815D5-1958-5132-92EC-042FABF2710C</string>
+			<string>307B3966-D6AF-5688-8D30-F23F9A0820F4</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -160,7 +160,7 @@
 				</dict>
 			</dict>
 			<key>PayloadDisplayName</key>
-			<string>Lockbox ubol</string>
+			<string>HappyBrowsing ubol</string>
 			<key>PayloadEnabled</key>
 			<true/>
 			<key>PayloadIdentifier</key>
@@ -168,25 +168,25 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>8E755AF5-413C-5274-BE59-5FEDDA3F0314</string>
+			<string>28C9F872-D088-5529-9B42-64BE8AC6FF5B</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
 	</array>
 	<key>PayloadDescription</key>
-	<string>Lockbox rules for Google Chrome: YouTube video pages only, Instagram blocked, filters locked.</string>
+	<string>HappyBrowsing rules for Google Chrome: YouTube video pages only, Instagram blocked, filters locked.</string>
 	<key>PayloadDisplayName</key>
-	<string>Lockbox – Chrome</string>
+	<string>HappyBrowsing – Chrome</string>
 	<key>PayloadIdentifier</key>
 	<string>com.lockbox.chrome</string>
 	<key>PayloadOrganization</key>
-	<string>Lockbox</string>
+	<string>HappyBrowsing</string>
 	<key>PayloadScope</key>
 	<string>System</string>
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>0AF43293-AA77-5ADF-86C7-0E5E94BCA8EE</string>
+	<string>ACAF61FA-76CA-56AD-ABBF-DC4B8D322517</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

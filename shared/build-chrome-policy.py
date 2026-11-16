@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Builds Chrome's Lockbox rules for both platforms.
+"""Builds Chrome's HappyBrowsing rules for both platforms.
 macOS:
-  src/Lockbox-Chrome.mobileconfig        locked: uBlock Origin Lite's dashboard, picker and filter editor are disabled
-  src/Lockbox-Chrome-setup.mobileconfig  setup: same rules, but uBOL's Custom filters pane is available
+  src/HappyBrowsing-Chrome.mobileconfig        locked: uBlock Origin Lite's dashboard, picker and filter editor are disabled
+  src/HappyBrowsing-Chrome-setup.mobileconfig  setup: same rules, but uBOL's Custom filters pane is available
   Both use the same identifier, so installing one replaces the other.
 Windows:
   windows/src/chrome-policy.json  written to HKLM\\SOFTWARE\\Policies\\Google\\Chrome by the enforcer
@@ -74,24 +74,24 @@ def profile(ubol_settings, name, desc):
     def payload(domain, settings, tag):
         return {"PayloadType": "com.apple.ManagedClient.preferences", "PayloadVersion": 1,
                 "PayloadIdentifier": "com.lockbox.chrome.prefs." + tag,
-                "PayloadUUID": str(uuid.uuid5(ns, tag + "-" + name + "-1.4.0")).upper(),
-                "PayloadDisplayName": "Lockbox " + tag, "PayloadEnabled": True,
+                "PayloadUUID": str(uuid.uuid5(ns, tag + "-" + name + "-1.5.0")).upper(),
+                "PayloadDisplayName": "HappyBrowsing " + tag, "PayloadEnabled": True,
                 "PayloadContent": {domain: {"Forced": [{"mcx_preference_settings": settings}]}}}
     return {"PayloadType": "Configuration", "PayloadVersion": 1,
             "PayloadIdentifier": "com.lockbox.chrome",
-            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.4.0")).upper(),
-            "PayloadDisplayName": "Lockbox – Chrome" + ("" if name == "locked" else " (setup)"),
-            "PayloadDescription": desc, "PayloadOrganization": "Lockbox",
+            "PayloadUUID": str(uuid.uuid5(ns, "outer-" + name + "-1.5.0")).upper(),
+            "PayloadDisplayName": "HappyBrowsing – Chrome" + ("" if name == "locked" else " (setup)"),
+            "PayloadDescription": desc, "PayloadOrganization": "HappyBrowsing",
             "PayloadScope": "System",
             "PayloadContent": [payload("com.google.Chrome", policy, "chrome"),
                                payload("com.google.Chrome.extensions." + UBOL, ubol_settings, "ubol")]}
 
 plistlib.dump(profile(UBOL_LOCKED, "locked",
-    "Lockbox rules for Google Chrome: YouTube video pages only, Instagram blocked, filters locked."),
-    open(SRC / "Lockbox-Chrome.mobileconfig", "wb"))
+    "HappyBrowsing rules for Google Chrome: YouTube video pages only, Instagram blocked, filters locked."),
+    open(SRC / "HappyBrowsing-Chrome.mobileconfig", "wb"))
 plistlib.dump(profile(UBOL_SETUP, "setup",
     "SETUP version: same rules, but uBlock Origin Lite's Custom filters pane is open so you can paste the filters. Replace with the normal profile afterwards."),
-    open(SRC / "Lockbox-Chrome-setup.mobileconfig", "wb"))
+    open(SRC / "HappyBrowsing-Chrome-setup.mobileconfig", "wb"))
 import json
 json.dump(policy, open(WIN / "chrome-policy.json", "w"), indent=2)
 json.dump({"id": UBOL, "locked": UBOL_LOCKED, "open": UBOL_SETUP}, open(WIN / "ubol-policy.json", "w"), indent=2)

@@ -118,7 +118,7 @@
 				</dict>
 			</dict>
 			<key>PayloadDisplayName</key>
-			<string>Lockbox chrome</string>
+			<string>HappyBrowsing chrome</string>
 			<key>PayloadEnabled</key>
 			<true/>
 			<key>PayloadIdentifier</key>
@@ -126,7 +126,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>629C919A-3767-5375-A744-8D13634A2F93</string>
+			<string>961777EE-EEFA-5B3B-AEA7-470D4DDA47D9</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -157,7 +157,7 @@
 				</dict>
 			</dict>
 			<key>PayloadDisplayName</key>
-			<string>Lockbox ubol</string>
+			<string>HappyBrowsing ubol</string>
 			<key>PayloadEnabled</key>
 			<true/>
 			<key>PayloadIdentifier</key>
@@ -165,7 +165,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.ManagedClient.preferences</string>
 			<key>PayloadUUID</key>
-			<string>90DC9324-A9D0-582D-B1E9-07BB1F3F9208</string>
+			<string>FF4F2F5E-FFDD-5707-BC80-345F79B9D6BE</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 		</dict>
@@ -173,17 +173,17 @@
 	<key>PayloadDescription</key>
 	<string>SETUP version: same rules, but uBlock Origin Lite's Custom filters pane is open so you can paste the filters. Replace with the normal profile afterwards.</string>
 	<key>PayloadDisplayName</key>
-	<string>Lockbox – Chrome (setup)</string>
+	<string>HappyBrowsing – Chrome (setup)</string>
 	<key>PayloadIdentifier</key>
 	<string>com.lockbox.chrome</string>
 	<key>PayloadOrganization</key>
-	<string>Lockbox</string>
+	<string>HappyBrowsing</string>
 	<key>PayloadScope</key>
 	<string>System</string>
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>F2C9403B-8931-5697-AC0F-FBD5CFC2AE51</string>
+	<string>80ACE097-6918-5065-ADE4-665F2EDDAB4F</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>

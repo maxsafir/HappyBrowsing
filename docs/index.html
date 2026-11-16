@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lockbox — a commitment device for your Mac or PC</title>
-<meta name="description" content="Lockbox takes away your own admin rights on macOS and Windows, keeps YouTube to single videos, blocks Instagram, and makes every unlock wait 30 minutes.">
+<title>HappyBrowsing — a commitment device for your Mac or PC</title>
+<meta name="description" content="HappyBrowsing takes away your own admin rights on macOS and Windows, keeps YouTube to single videos, blocks Instagram, and makes every unlock wait 30 minutes.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -114,7 +114,14 @@
 
 
   footer{border-top:2px solid var(--ink);padding:36px 0 60px;color:var(--muted);font-size:15px}
-  footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .foot-top{display:flex;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;color:var(--ink)}
+  .foot-links a{margin-left:20px}
+  .foot-links a:first-child{margin-left:0}
+  footer .fine{max-width:none;margin:16px 0 0;font-size:14px;line-height:1.5}
+  .warn{margin:4px 0 16px;padding:16px 20px;border:2px solid var(--brass);border-radius:10px;background:#FBF6EC}
+  .warn strong{display:block;font-size:17px;margin-bottom:6px}
+  .warn ul{margin:0;padding-left:20px;font-size:16px;color:#2E3846}
+  .warn li{margin:4px 0}
 
   @media (max-width:860px){
     .hero{grid-template-columns:1fr;gap:44px;padding-top:24px}
@@ -131,7 +138,7 @@
   <header class="top">
     <a class="mark" href="#">
       <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="9" width="22" height="15" rx="3" fill="#1C2430"/><path d="M7 9V7a6 6 0 0 1 12 0v2" fill="none" stroke="#1C2430" stroke-width="3"/><circle cx="13" cy="16.5" r="2.4" fill="#A67C2E"/></svg>
-      Lockbox
+      HappyBrowsing
     </a>
     <nav>
       <a class="hide-sm" href="#blocks">What it blocks</a>
@@ -144,10 +151,10 @@
   <div class="hero">
     <div>
       <h1>Put thirty minutes between you and the feed.</h1>
-      <p class="lede">Lockbox takes away your own admin rights on your Mac or Windows PC, keeps YouTube and Reddit to the one video or post you came for, and blocks Instagram. When you really need admin, you ask for it, and wait.</p>
+      <p class="lede">HappyBrowsing takes away your own admin rights on your Mac or Windows PC, keeps YouTube and Reddit to the one video or post you came for, and blocks Instagram. When you really need admin, you ask for it, and wait.</p>
       <div class="cta">
-        <a class="btn solid" href="downloads/lockbox-mac.zip" download>Download for Mac</a>
-        <a class="btn solid" href="downloads/lockbox-windows.zip" download>Download for Windows</a>
+        <a class="btn solid" href="downloads/happybrowsing-mac.zip" download>Download for Mac</a>
+        <a class="btn solid" href="downloads/happybrowsing-windows.zip" download>Download for Windows</a>
         <a class="btn ghost" href="https://github.com/maxsafir/lockbox">Source on GitHub</a>
       </div>
     </div>
@@ -207,7 +214,7 @@
       <div class="layer"><h3>Hosts file</h3><p>Instagram's domains point nowhere for every app on the computer, Chrome included.</p></div>
       <div class="layer"><h3>App guard</h3><p>While locked, only apps from developers already on your computer can run. A renamed or re-signed browser is closed on sight.</p></div>
       <div class="layer"><h3>NextDNS</h3><p>Optional. Filters DNS on any network you join, encrypted, through the official NextDNS CLI.</p></div>
-      <div class="layer"><h3>Lockbox app</h3><p>Request an unlock, cancel it, or re-lock early. Admin ends on its own after two hours.</p></div>
+      <div class="layer"><h3>HappyBrowsing app</h3><p>Request an unlock, cancel it, or re-lock early. Admin ends on its own after two hours.</p></div>
     </div>
   </div>
 </section>
@@ -220,21 +227,31 @@
       <button role="tab" aria-selected="true" aria-controls="steps-mac" id="tab-mac" type="button">Mac</button>
       <button role="tab" aria-selected="false" aria-controls="steps-win" id="tab-win" type="button">Windows</button>
     </div>
-    <div class="platform" id="steps-mac" role="tabpanel" aria-labelledby="tab-mac"><div class="group"><h3>Install Lockbox</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/lockbox-mac.zip" download>lockbox-mac.zip</a> and double-click it, so a <b>lockbox-mac</b> folder appears in Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Open Terminal and paste this. Type your Mac password when asked (nothing shows while you type). When it asks for a NextDNS ID, paste yours or press Enter to skip.</p><div class="code"><span>cd ~/Downloads/lockbox-mac &amp;&amp; sudo bash install.sh</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Install the setup profile</h4><p>Run this, then open System Settings, General, Device Management. Double-click <b>Lockbox – Chrome (setup)</b>, click Install, and restart the Mac.</p><div class="code"><span>open /Library/Lockbox/Lockbox-Chrome-setup.mobileconfig</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Add the filters</h4><p>Run this to copy the filters. Then in Chrome click the puzzle icon, <b>uBlock Origin Lite</b>, then the gear, and open <b>Custom filters</b>. Click in the text box, press ⌘A, paste, and save.</p><div class="code"><span>pbcopy &lt; /Library/Lockbox/ubol-filters.txt</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Lock the filters</h4><p>Run this, then in Device Management double-click <b>Lockbox – Chrome</b>, click Install, and restart the Mac. It replaces the setup profile.</p><div class="code"><span>open /Library/Lockbox/Lockbox-Chrome.mobileconfig</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Arm it</h3><ol class="steps"><li><div><h4>Arm Lockbox</h4><p>Use your Mac username. Type ARM when asked, then restart. Your account is now a Standard user.</p><div class="code"><span>sudo lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Updating from an earlier version</h3><ol class="plain">
-<li>Open Lockbox, click <b>Request unlock</b>, and wait until you're an administrator.</li>
-<li>Move the old <b>lockbox-mac</b> folder to the Trash, then do steps 1 to 5 above.</li>
-<li>Open Lockbox and click <b>Re-lock now</b>.</li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every network and keeps YouTube out of every app except Chrome. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or add it later while unlocked:</p><div class="code"><span>sudo lockboxctl nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
-    <div class="platform" id="steps-win" role="tabpanel" aria-labelledby="tab-win" hidden><div class="group"><h3>Install Lockbox</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/lockbox-windows.zip" download>lockbox-windows.zip</a>, right-click it, choose Extract All, and extract it into Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Right-click Start and choose <b>Terminal (Admin)</b>, then paste this. When it asks for a NextDNS ID, paste yours or press Enter to skip.</p><div class="code"><span>cd $HOME\Downloads\lockbox-windows; powershell -ExecutionPolicy Bypass -File install.ps1</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Open the filter editor</h4><p>Close Terminal, open a new <b>Terminal (Admin)</b>, and run this. It also copies the filters to your clipboard. Then quit Chrome fully, including from the system tray, and open it again.</p><div class="code"><span>lockboxctl filters open</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Add the filters</h4><p>In Chrome click the puzzle icon, <b>uBlock Origin Lite</b>, then the gear, and open <b>Custom filters</b>. Click in the text box, press Ctrl+A, paste, and save.</p></div></li><li><div><h4>Lock the filters</h4><p>Then restart Chrome.</p><div class="code"><span>lockboxctl filters lock</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Arm it</h3><ol class="steps"><li><div><h4>Turn on encryption</h4><p>Open Settings, Privacy &amp; security, <b>Device encryption</b> (BitLocker on Windows Pro), and turn it on.</p></div></li><li><div><h4>Arm Lockbox</h4><p>Use your Windows username. Type ARM when asked, then sign out and back in. Your account is now a Standard user.</p><div class="code"><span>lockboxctl arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Updating from an earlier version</h3><ol class="plain">
-<li>Open Lockbox, click <b>Request unlock</b>, and wait until you're an administrator.</li>
-<li>Delete the old <b>lockbox-windows</b> folder, then do steps 1 to 5 above.</li>
-<li>Open Lockbox and click <b>Re-lock now</b>.</li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every network. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or add it later in Terminal (Admin) while unlocked:</p><div class="code"><span>lockboxctl nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
+    <div class="platform" id="steps-mac" role="tabpanel" aria-labelledby="tab-mac"><div class="group"><h3>Install HappyBrowsing</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/happybrowsing-mac.zip" download>happybrowsing-mac.zip</a> and double-click it, so a <b>happybrowsing-mac</b> folder appears in Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Open Terminal and paste this. Type your Mac password when asked (nothing shows while you type). When it asks for a NextDNS ID, paste yours or press Enter to skip.</p><div class="code"><span>cd ~/Downloads/happybrowsing-mac &amp;&amp; sudo bash install.sh</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Install the setup profile</h4><p>Run this, then open System Settings, General, Device Management. Double-click <b>HappyBrowsing – Chrome (setup)</b>, click Install, and restart the Mac.</p><div class="code"><span>open /Library/HappyBrowsing/HappyBrowsing-Chrome-setup.mobileconfig</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Add the filters</h4><p>Run this to copy the filters. Then in Chrome click the puzzle icon, <b>uBlock Origin Lite</b>, then the gear, and open <b>Custom filters</b>. Click in the text box, press ⌘A, paste, and save.</p><div class="code"><span>pbcopy &lt; /Library/HappyBrowsing/ubol-filters.txt</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Lock the filters</h4><p>Run this, then in Device Management double-click <b>HappyBrowsing – Chrome</b>, click Install, and restart the Mac. It replaces the setup profile.</p><div class="code"><span>open /Library/HappyBrowsing/HappyBrowsing-Chrome.mobileconfig</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Arm it</h3><ol class="steps"><li><div><h4>Arm HappyBrowsing</h4><div class="warn" role="note"><strong>Read this before you arm</strong><ul>
+<li>Your account becomes a Standard user: no admin, no sudo, no changing system settings.</li>
+<li>Getting admin back takes a 30-minute wait in the HappyBrowsing app. It then lasts 2 hours. You can only uninstall during an unlock.</li>
+<li>Apps you install later won't open while locked until your next unlock.</li>
+<li>HappyBrowsing is the only thing that gives admin back. If it ever stopped working while armed, getting admin back could mean erasing and reinstalling macOS. Back up your Mac with Time Machine or iCloud first.</li>
+<li>It's provided as is, with no warranty. See the <a href="terms.html">terms</a>.</li></ul></div><p>Use your Mac username. The same warning appears in Terminal: type ARM to accept it, then restart. Your account is now a Standard user.</p><div class="code"><span>sudo happybrowsing arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Updating from an earlier version</h3><ol class="plain">
+<li>Open HappyBrowsing (called <b>Lockbox</b> in versions before 1.5), click <b>Request unlock</b>, and wait until you're an administrator.</li>
+<li>Move the old download folder to the Trash, then do steps 1 and 2 above. Your settings, Chrome profile and filters carry over.</li>
+<li>Open HappyBrowsing and click <b>Re-lock now</b>.</li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every network and keeps YouTube out of every app except Chrome. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or add it later while unlocked:</p><div class="code"><span>sudo happybrowsing nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
+    <div class="platform" id="steps-win" role="tabpanel" aria-labelledby="tab-win" hidden><div class="group"><h3>Install HappyBrowsing</h3><ol class="steps"><li><div><h4>Download and unzip</h4><p>Download <a href="downloads/happybrowsing-windows.zip" download>happybrowsing-windows.zip</a>, right-click it, choose Extract All, and extract it into Downloads.</p></div></li><li><div><h4>Run the installer</h4><p>Right-click Start and choose <b>Terminal (Admin)</b>, then paste this. When it asks for a NextDNS ID, paste yours or press Enter to skip.</p><div class="code"><span>cd $HOME\Downloads\happybrowsing-windows; powershell -ExecutionPolicy Bypass -File install.ps1</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Set up Chrome</h3><ol class="steps"><li><div><h4>Open the filter editor</h4><p>Close Terminal, open a new <b>Terminal (Admin)</b>, and run this. It also copies the filters to your clipboard. Then quit Chrome fully, including from the system tray, and open it again.</p><div class="code"><span>happybrowsing filters open</span><button class="copy" type="button">Copy</button></div></div></li><li><div><h4>Add the filters</h4><p>In Chrome click the puzzle icon, <b>uBlock Origin Lite</b>, then the gear, and open <b>Custom filters</b>. Click in the text box, press Ctrl+A, paste, and save.</p></div></li><li><div><h4>Lock the filters</h4><p>Then restart Chrome.</p><div class="code"><span>happybrowsing filters lock</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="group"><h3>Arm it</h3><ol class="steps"><li><div><h4>Turn on encryption</h4><p>Open Settings, Privacy &amp; security, <b>Device encryption</b> (BitLocker on Windows Pro), and turn it on.</p></div></li><li><div><h4>Arm HappyBrowsing</h4><div class="warn" role="note"><strong>Read this before you arm</strong><ul>
+<li>Your account becomes a Standard user: no admin, no changing system settings.</li>
+<li>Getting admin back takes a 30-minute wait in the HappyBrowsing app. It then lasts 2 hours. You can only uninstall during an unlock.</li>
+<li>Programs you install later may not open while locked until your next unlock.</li>
+<li>HappyBrowsing is the only thing that gives admin back. If it ever stopped working while armed, getting admin back could mean resetting Windows. Back up your files and save your encryption recovery key first.</li>
+<li>It's provided as is, with no warranty. See the <a href="terms.html">terms</a>.</li></ul></div><p>Use your Windows username. The same warning appears in Terminal: type ARM to accept it, then sign out and back in. Your account is now a Standard user.</p><div class="code"><span>happybrowsing arm YOUR_USERNAME</span><button class="copy" type="button">Copy</button></div></div></li></ol></div><div class="aside"><h3>Updating from an earlier version</h3><ol class="plain">
+<li>Open HappyBrowsing, click <b>Request unlock</b>, and wait until you're an administrator.</li>
+<li>Delete the old <b>happybrowsing-windows</b> folder, then do steps 1 to 5 above.</li>
+<li>Open HappyBrowsing and click <b>Re-lock now</b>.</li></ol></div><div class="aside"><h3>Optional: NextDNS</h3><p>Makes the blocks follow you onto every network. Make a free account at <a href="https://nextdns.io">nextdns.io</a>, open the Setup tab and copy the 6-character ID. Paste it when the installer asks, or add it later in Terminal (Admin) while unlocked:</p><div class="code"><span>happybrowsing nextdns YOUR_ID</span><button class="copy" type="button">Copy</button></div><p>In the NextDNS dashboard, leave Block Bypass Methods off. It would stop Chrome's own encrypted DNS.</p></div></div>
   </div>
 </section>
 
 <section id="use">
   <div class="wrap">
     <h2>Living with it.</h2>
-    <p class="intro">Open <b>Lockbox</b> from Applications on a Mac, or from the Start menu on Windows.</p>
+    <p class="intro">Open <b>HappyBrowsing</b> from Applications on a Mac, or from the Start menu on Windows.</p>
     <div class="ledger">
       <div>
         <h3>When you need admin</h3>
@@ -259,8 +276,12 @@
 
 <footer>
   <div class="wrap">
-    <span>Lockbox 1.4 for macOS and Windows. Uses <a href="https://nextdns.io">NextDNS</a>, uBlock Origin Lite, Mono for YouTube and Reddit Liberation.</span>
-    <a href="https://github.com/maxsafir/lockbox">GitHub</a>
+    <div class="foot-top">
+      <span>HappyBrowsing 1.5 for macOS and Windows. Free and open source (MIT).</span>
+      <span class="foot-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms &amp; disclaimer</a><a href="mailto:hello@happybrowsing.anonaddy.com">Contact</a><a href="https://github.com/maxsafir/lockbox">GitHub</a></span>
+    </div>
+    <p class="fine">HappyBrowsing removes administrator rights from your own account on purpose. It is provided as is, without warranty of any kind, and you use it at your own risk. Back up your computer before arming it. Questions or concerns: <a href="mailto:hello@happybrowsing.anonaddy.com">hello@happybrowsing.anonaddy.com</a>.</p>
+    <p class="fine">HappyBrowsing is an independent project. It is not affiliated with, endorsed by or sponsored by Google, YouTube, Reddit, Meta, Instagram, Apple, Microsoft, NextDNS, Cloudflare, or the developers of uBlock Origin Lite, Mono for YouTube or Reddit Liberation. All product names are trademarks of their owners and are used only to describe what HappyBrowsing works with.</p>
   </div>
 </footer>
 

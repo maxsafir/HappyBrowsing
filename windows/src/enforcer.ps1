@@ -1,14 +1,14 @@
-# Lockbox enforcer for Windows 1.3 — runs as SYSTEM from the "Lockbox Enforcer" scheduled task, every 5 seconds.
+# HappyBrowsing enforcer for Windows 1.5 — runs as SYSTEM from the "HappyBrowsing Enforcer" scheduled task, every 5 seconds.
 #   locked   -> target user is a Standard user, every block enforced, app guard on, uBOL filters locked
 #   pending  -> unlock requested, still locked, waits UnlockDelay seconds
 #   unlocked -> target user is an administrator (blocks stay on, app guard off) until Re-lock or AdminWindow ends
 $ErrorActionPreference = 'SilentlyContinue'
 
-$App   = Join-Path $env:ProgramFiles 'Lockbox'
-$Data  = Join-Path $env:ProgramData 'Lockbox'
+$App   = Join-Path $env:ProgramFiles 'HappyBrowsing'
+$Data  = Join-Path $env:ProgramData 'HappyBrowsing'
 $Inbox = Join-Path $Data 'inbox'
 $Trust = Join-Path $Data 'trust'
-$Log   = Join-Path $Data 'lockbox.log'
+$Log   = Join-Path $Data 'happybrowsing.log'
 $Hosts = Join-Path $env:SystemRoot 'System32\drivers\etc\hosts'
 $ChromeKey = 'HKLM:\SOFTWARE\Policies\Google\Chrome'
 
@@ -71,12 +71,12 @@ function Enforce-Hosts {
   $lines = Get-Content $Hosts
   $in = $false; $cur = @(); $rest = @()
   foreach ($l in $lines) {
-    if ($l -eq '# >>> lockbox') { $in = $true; continue }
-    if ($l -eq '# <<< lockbox') { $in = $false; continue }
+    if ($l -eq '# >>> happybrowsing') { $in = $true; continue }
+    if ($l -eq '# <<< happybrowsing') { $in = $false; continue }
     if ($in) { $cur += $l } else { $rest += $l }
   }
   if (($cur -join "`n") -ne ($want -join "`n")) {
-    $new = $rest + '# >>> lockbox' + $want + '# <<< lockbox'
+    $new = $rest + '# >>> happybrowsing' + $want + '# <<< happybrowsing'
     Set-Content -Path $Hosts -Value $new -Encoding ASCII
     Clear-DnsClientCache
     Write-Log 'hosts block re-applied'
@@ -88,12 +88,12 @@ function Enforce-Hosts {
 # Chrome resolves through its own encrypted DNS (policy), so only Chrome can still reach YouTube.
 function Enforce-Nrpt {
   $domains = Get-Content (Join-Path $App 'youtube-domains.txt') | Where-Object { $_ -and $_ -notmatch '^#' }
-  $existing = @(Get-DnsClientNrptRule | Where-Object { $_.Comment -eq 'Lockbox' })
+  $existing = @(Get-DnsClientNrptRule | Where-Object { $_.Comment -eq 'HappyBrowsing' })
   $changed = $false
   foreach ($d in $domains) {
     foreach ($ns in @(".$d", $d)) {
       if (-not ($existing | Where-Object { $_.Namespace -contains $ns })) {
-        Add-DnsClientNrptRule -Namespace $ns -NameServers '127.0.0.2' -Comment 'Lockbox' | Out-Null
+        Add-DnsClientNrptRule -Namespace $ns -NameServers '127.0.0.2' -Comment 'HappyBrowsing' | Out-Null
         $changed = $true
       }
     }
@@ -194,7 +194,7 @@ function Enforce-NextDns {
   if ($svc -and $svc.Status -ne 'Running') { Start-Service 'NextDNS'; Write-Log 'NextDNS started' }
 }
 
-# ---------- requests from the Lockbox app ----------
+# ---------- requests from the HappyBrowsing app ----------
 function Relocked {
   Start-Process -WindowStyle Hidden -FilePath powershell.exe -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',"`"$App\trust-scan.ps1`""
 }
@@ -230,7 +230,7 @@ function Write-Status($cfg, $st) {
 
 # ---------- main loop ----------
 New-Item -ItemType Directory -Force -Path $Inbox | Out-Null
-Write-Log 'enforcer 1.3 started'
+Write-Log 'enforcer 1.5 started'
 Load-BrowserList
 $i = 0
 while ($true) {

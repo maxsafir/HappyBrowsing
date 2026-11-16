@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy — HappyBrowsing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{--steel:#E4E8EC;--plate:#F3F5F7;--ink:#1C2430;--rule:#B7C0C9;--muted:#5A6573;
+    --display:"Archivo","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--steel);color:var(--ink);font-family:var(--display);font-size:18px;line-height:1.6}
+  a{color:inherit;text-underline-offset:3px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px}
+  header{padding:26px 0;display:flex;justify-content:space-between;align-items:center}
+  header a{text-decoration:none;font-weight:800;font-stretch:118%;font-size:20px}
+  header nav a{font-weight:400;font-size:16px;color:var(--muted);margin-left:20px;font-stretch:100%}
+  main{background:var(--plate);border:2px solid var(--ink);border-radius:14px;padding:36px 40px;margin-bottom:60px}
+  h1{font-weight:850;font-stretch:118%;font-size:clamp(34px,5vw,48px);line-height:1.05;letter-spacing:-.02em;margin:0 0 6px}
+  .updated{color:var(--muted);margin:0 0 28px;font-size:15px}
+  h2{font-size:22px;font-weight:800;margin:32px 0 8px}
+  p,li{color:#2E3846}
+  ul{padding-left:22px} li{margin:6px 0}
+  code{font-family:var(--mono);font-size:15px;background:var(--steel);padding:1px 6px;border-radius:4px}
+  .caps{font-size:15px;letter-spacing:.01em}
+  footer{color:var(--muted);font-size:15px;padding:0 0 60px}
+  @media (max-width:600px){main{padding:26px 22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><a href="index.html">HappyBrowsing</a><nav><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></header>
+<main>
+<h1>Privacy policy</h1>
+<p class="updated">Last updated November 15, 2026</p>
+
+<h2>The short version</h2>
+<p>HappyBrowsing doesn't collect anything. There's no account, no analytics, no tracking and no server of ours. The software runs only on your computer, and nothing it does is sent to us.</p>
+
+<h2>What stays on your computer</h2>
+<ul>
+<li>Your settings: which account is armed, the unlock wait and the admin window.</li>
+<li>A list of trusted apps: developer IDs and code-signature hashes of apps you have installed. It's used to decide which apps may run while locked.</li>
+<li>A log of what HappyBrowsing did, such as closing a blocked browser or re-applying a block. On a Mac it's <code>/var/log/happybrowsing.log</code>; on Windows it's in <code>C:\ProgramData\HappyBrowsing</code>.</li>
+</ul>
+<p>Uninstalling HappyBrowsing deletes all of this.</p>
+
+<h2>Services HappyBrowsing connects you to</h2>
+<p>These are run by other companies under their own privacy policies. HappyBrowsing doesn't share anything with them beyond what's described here.</p>
+<ul>
+<li><b>Cloudflare:</b> Chrome is set to look up website addresses through Cloudflare's encrypted DNS (<code>chrome.cloudflare-dns.com</code>), so Cloudflare sees the domain names Chrome visits.</li>
+<li><b>NextDNS (optional):</b> if you add a NextDNS ID, your computer's DNS lookups go to your NextDNS account. The installer turns on NextDNS's option to include this computer's name, so you can tell your devices apart in NextDNS's logs. You control logging in your NextDNS dashboard.</li>
+<li><b>Chrome Web Store and GitHub:</b> Chrome downloads the required extensions from the Chrome Web Store, and the installer downloads the NextDNS app from GitHub.</li>
+<li><b>This website:</b> it's hosted on GitHub Pages and loads fonts from Google Fonts. GitHub and Google may record your IP address when you visit. The site sets no cookies and runs no analytics.</li>
+</ul>
+
+<h2>Email</h2>
+<p>If you email <a href="mailto:hello@happybrowsing.anonaddy.com">hello@happybrowsing.anonaddy.com</a>, your message is forwarded to the developer's personal inbox through addy.io. It's used only to reply to you and isn't shared or sold.</p>
+
+<h2>Children</h2>
+<p>HappyBrowsing collects no personal information from anyone, including children.</p>
+
+<h2>Changes</h2>
+<p>If this policy changes, the new version will be posted here with a new date. The full history is public on <a href="https://github.com/maxsafir/lockbox">GitHub</a>.</p>
+</main>
+<footer>Questions or concerns: <a href="mailto:hello@happybrowsing.anonaddy.com">hello@happybrowsing.anonaddy.com</a> · <a href="index.html">Back to HappyBrowsing</a></footer>
+</div>
+</body>
+</html>

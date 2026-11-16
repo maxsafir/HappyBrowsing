@@ -1,4 +1,4 @@
-! Lockbox: YouTube shows the video and its title, nothing else.
+! HappyBrowsing: YouTube shows the video and its title, nothing else.
 ! Paste into uBlock Origin Lite → Dashboard → Custom filters, while the setup profile is installed.
 www.youtube.com##ytd-masthead
 www.youtube.com###masthead-container

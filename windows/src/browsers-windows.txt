@@ -1,4 +1,4 @@
-# Browsers Lockbox closes on Windows. Plain lines = program file names; "signer:" lines = Authenticode publisher.
+# Browsers HappyBrowsing closes on Windows. Plain lines = program file names; "signer:" lines = Authenticode publisher.
 firefox.exe
 librewolf.exe
 waterfox.exe

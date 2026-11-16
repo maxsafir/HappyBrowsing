@@ -1,8 +1,8 @@
-# Lockbox
+# HappyBrowsing
 
-**A commitment device for your computer.** Lockbox blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin — to install an app or run an update — you request it and wait 30 minutes. The wait is the point.
+**A commitment device for your computer.** HappyBrowsing blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin — to install an app or run an update — you request it and wait 30 minutes. The wait is the point.
 
-**Website:** https://maxsafir.github.io/lockbox · **Downloads:** [Mac](docs/downloads/lockbox-mac.zip) · [Windows](docs/downloads/lockbox-windows.zip)
+**Website:** https://maxsafir.github.io/lockbox · **Downloads:** [Mac](docs/downloads/happybrowsing-mac.zip) · [Windows](docs/downloads/happybrowsing-windows.zip)
 
 | | [macOS](mac/README.md) | [Windows](windows/README.md) |
 |---|---|---|
@@ -40,4 +40,12 @@ After editing anything in `shared/`, run `./build.sh` and commit.
 
 ## Honest limits
 
-Lockbox is built against impulses, not against a determined person with physical access and an afternoon: you can always request an unlock and then remove it, erase the machine, or (on Windows without BitLocker) edit files from a USB stick. See each platform's README for the full threat model.
+HappyBrowsing is built against impulses, not against a determined person with physical access and an afternoon: you can always request an unlock and then remove it, erase the machine, or (on Windows without BitLocker) edit files from a USB stick. See each platform's README for the full threat model.
+
+## License, privacy and disclaimer
+
+- **License:** [MIT](LICENSE). Provided as is, without warranty. HappyBrowsing removes admin rights from your account on purpose: back up your computer before arming it.
+- **Privacy:** HappyBrowsing collects nothing. See the [privacy policy](docs/privacy.html) and [terms](docs/terms.html).
+- **Contact:** hello@happybrowsing.anonaddy.com
+- **Not affiliated** with Google, YouTube, Reddit, Meta, Instagram, Apple, Microsoft, NextDNS, Cloudflare, or the developers of uBlock Origin Lite, Mono for YouTube or Reddit Liberation. Product names are trademarks of their owners.
+- **Formerly Lockbox.** Installing 1.5 over Lockbox moves your settings across automatically.

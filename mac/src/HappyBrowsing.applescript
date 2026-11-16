@@ -1,4 +1,4 @@
--- Lockbox app: request an unlock, cancel it, or re-lock.
+-- HappyBrowsing app: request an unlock, cancel it, or re-lock.
 on sh(c)
 	try
 		return do shell script c
@@ -8,10 +8,10 @@ on sh(c)
 end sh
 
 on run
-	set s to sh("cat /Library/Lockbox/status.txt")
-	if s is "" then set s to "Lockbox is not running."
-	set delayMin to sh("awk -F= '/^UNLOCK_DELAY/{print int($2/60)}' /Library/Lockbox/config")
-	set windowMin to sh("awk -F= '/^ADMIN_WINDOW/{print int($2/60)}' /Library/Lockbox/config")
+	set s to sh("cat /Library/HappyBrowsing/status.txt")
+	if s is "" then set s to "HappyBrowsing is not running."
+	set delayMin to sh("awk -F= '/^UNLOCK_DELAY/{print int($2/60)}' /Library/HappyBrowsing/config")
+	set windowMin to sh("awk -F= '/^ADMIN_WINDOW/{print int($2/60)}' /Library/HappyBrowsing/config")
 	set reqLabel to "Request unlock (" & delayMin & " min wait)"
 	if s starts with "LOCKED" then
 		set btns to {"Close", reqLabel}
@@ -23,16 +23,16 @@ on run
 		set btns to {"Close"}
 	end if
 	set msg to "Status: " & s & return & return & "Unlocking makes your account an admin (to install apps or use sudo) after a " & delayMin & "-minute wait. The YouTube and Instagram blocks stay on. Admin ends when you press Re-lock, or automatically after " & windowMin & " minutes."
-	set b to button returned of (display dialog msg buttons btns default button "Close" with title "Lockbox")
+	set b to button returned of (display dialog msg buttons btns default button "Close" with title "HappyBrowsing")
 	if b is reqLabel then
-		sh("touch /Library/Lockbox/inbox/unlock")
+		sh("touch /Library/HappyBrowsing/inbox/unlock")
 	else if b is "Cancel unlock request" then
-		sh("touch /Library/Lockbox/inbox/cancel")
+		sh("touch /Library/HappyBrowsing/inbox/cancel")
 	else if b is "Re-lock now" then
-		sh("touch /Library/Lockbox/inbox/relock")
+		sh("touch /Library/HappyBrowsing/inbox/relock")
 	else
 		return
 	end if
 	delay 7
-	display dialog ("Status: " & sh("cat /Library/Lockbox/status.txt")) buttons {"OK"} default button "OK" with title "Lockbox"
+	display dialog ("Status: " & sh("cat /Library/HappyBrowsing/status.txt")) buttons {"OK"} default button "OK" with title "HappyBrowsing"
 end run

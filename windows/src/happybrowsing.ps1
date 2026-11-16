@@ -1,4 +1,4 @@
-# Lockbox control tool for Windows.   lockboxctl <command>
+# HappyBrowsing control tool for Windows.   happybrowsing <command>
 #   guide                         what to do next, step by step
 #   verify                        check every layer
 #   nextdns [ID]                  no ID: how to get one + status.  With ID (admin): install/switch NextDNS
@@ -8,9 +8,9 @@
 #   status                        state, config and recent log
 param([string]$Cmd = 'help', [string]$A1, [string]$A2, [string]$A3)
 $ErrorActionPreference = 'SilentlyContinue'
-$Version = '1.4.0'
-$App  = Join-Path $env:ProgramFiles 'Lockbox'
-$Data = Join-Path $env:ProgramData 'Lockbox'
+$Version = '1.5.0'
+$App  = Join-Path $env:ProgramFiles 'HappyBrowsing'
+$Data = Join-Path $env:ProgramData 'HappyBrowsing'
 $ChromeKey = 'HKLM:\SOFTWARE\Policies\Google\Chrome'
 $UbolKey = "$ChromeKey\3rdparty\extensions\ddkjiahejlhfcafbddmgiahcphecmpfh\policy"
 
@@ -26,29 +26,29 @@ function Is-AdminUser($u) { (& net.exe localgroup (Admins-Name)) -contains $u }
 
 switch ($Cmd) {
   'verify' {
-    $script:Fail = $false; Write-Host "Lockbox $Version - verify"
+    $script:Fail = $false; Write-Host "HappyBrowsing $Version - verify"
     $sf = Get-Item "$Data\status.txt"
     if ($sf -and ((Get-Date) - $sf.LastWriteTime).TotalSeconds -lt 60) { Ok 'enforcer running' } else { Bad 'enforcer not running (status not updated in the last minute)' }
     if ((Get-ItemProperty $ChromeKey).DnsOverHttpsMode -eq 'secure') { Ok 'Chrome rules applied (own encrypted DNS)' } else { Bad 'Chrome rules missing' }
     $df = (Get-ItemProperty $UbolKey).disabledFeatures
-    if ($df -match 'picker') { Ok 'uBlock Origin Lite filters locked' } elseif ($df) { Info 'uBlock Origin Lite filter editor is OPEN (lockboxctl filters lock)' } else { Bad 'uBlock Origin Lite settings missing' }
-    if ((Get-Content "$env:SystemRoot\System32\drivers\etc\hosts") -contains '# >>> lockbox') { Ok 'hosts block present (Instagram)' } else { Bad 'hosts block missing' }
-    $n = @(Get-DnsClientNrptRule | Where-Object { $_.Comment -eq 'Lockbox' }).Count
+    if ($df -match 'picker') { Ok 'uBlock Origin Lite filters locked' } elseif ($df) { Info 'uBlock Origin Lite filter editor is OPEN (happybrowsing filters lock)' } else { Bad 'uBlock Origin Lite settings missing' }
+    if ((Get-Content "$env:SystemRoot\System32\drivers\etc\hosts") -contains '# >>> happybrowsing') { Ok 'hosts block present (Instagram)' } else { Bad 'hosts block missing' }
+    $n = @(Get-DnsClientNrptRule | Where-Object { $_.Comment -eq 'HappyBrowsing' }).Count
     if ($n) { Ok "YouTube DNS rules: $n" } else { Bad 'YouTube DNS rules missing' }
     $r = Resolve-DnsName www.youtube.com -DnsOnly -QuickTimeout -ErrorAction SilentlyContinue
     if (-not ($r | Where-Object { $_.IPAddress })) { Ok 'YouTube does not resolve for other apps' } else { Bad 'YouTube still resolves for other apps' }
     if (Resolve-DnsName www.google.com -DnsOnly -QuickTimeout -ErrorAction SilentlyContinue) { Ok 'normal DNS works' } else { Bad 'normal DNS lookups failing' }
-    if (Get-Service NextDNS) { if ((Get-Service NextDNS).Status -eq 'Running') { Ok 'NextDNS running' } else { Bad 'NextDNS installed but not running' } } else { Info 'NextDNS not installed (optional: lockboxctl nextdns)' }
-    if (Test-Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\Lockbox.lnk") { Ok 'Lockbox app in Start menu' } else { Bad 'Lockbox Start menu shortcut missing' }
+    if (Get-Service NextDNS) { if ((Get-Service NextDNS).Status -eq 'Running') { Ok 'NextDNS running' } else { Bad 'NextDNS installed but not running' } } else { Info 'NextDNS not installed (optional: happybrowsing nextdns)' }
+    if (Test-Path "$env:ProgramData\Microsoft\Windows\Start Menu\Programs\HappyBrowsing.lnk") { Ok 'HappyBrowsing app in Start menu' } else { Bad 'HappyBrowsing Start menu shortcut missing' }
     $c = Load-Config
     if ($c.Armed) {
       Ok "armed for $($c.TargetUser) (unlock wait $([int]($c.UnlockDelay/60)) min, admin window $([int]($c.AdminWindow/60)) min)"
       $st = Get-Content "$Data\state.json" -Raw | ConvertFrom-Json
       if ($st.State -ne 'unlocked') { if (Is-AdminUser $c.TargetUser) { Bad "$($c.TargetUser) is admin while locked" } else { Ok "$($c.TargetUser) is a Standard user" } }
       if (Test-Path "$Data\trust\publishers.txt") { Ok "app guard trust list: $((Get-Content "$Data\trust\publishers.txt").Count) publishers" }
-    } else { Info 'not armed yet (lockboxctl arm <user>)' }
+    } else { Info 'not armed yet (happybrowsing arm <user>)' }
     $bl = (New-Object -ComObject Shell.Application).NameSpace("$env:SystemDrive\").Self.ExtendedProperty('System.Volume.BitLockerProtection') -eq 1
-    if ($bl) { Ok 'BitLocker on' } else { Info 'BitLocker/Device encryption off: someone with physical access could bypass Lockbox from outside Windows' }
+    if ($bl) { Ok 'BitLocker on' } else { Info 'BitLocker/Device encryption off: someone with physical access could bypass HappyBrowsing from outside Windows' }
     Write-Host "  status: $(Get-Content "$Data\status.txt")"
     if ($script:Fail) { Write-Host 'Some checks failed.'; exit 1 } else { Write-Host 'All checks passed.' }
   }
@@ -56,14 +56,14 @@ switch ($Cmd) {
   'nextdns' {
     if (-not $A1) {
 @'
-NextDNS filters DNS on every network you join (optional - Lockbox's own blocks work without it).
+NextDNS filters DNS on every network you join (optional - HappyBrowsing's own blocks work without it).
 
   1. Make a free account at https://nextdns.io
   2. Open the Setup tab. Your config ID is the 6-character code next to "ID" (e.g. abc123).
   3. Optional, in the NextDNS dashboard:
        Parental Control -> Websites, Apps & Games -> add Instagram
        Leave Settings -> "Block Bypass Methods" OFF (it would break Chrome's encrypted DNS)
-  4. Install it (admin Terminal, while unlocked):   lockboxctl nextdns abc123
+  4. Install it (admin Terminal, while unlocked):   happybrowsing nextdns abc123
 '@ | Write-Host
       $s = Get-Service NextDNS; Write-Host ("Current: " + $(if ($s) { $s.Status } else { 'not installed' }))
       exit 0
@@ -97,44 +97,55 @@ NextDNS filters DNS on every network you join (optional - Lockbox's own blocks w
       $c.Filters = 'open'; Save-Config $c
       Write-Host 'Opening in ~30 s. Then: quit Chrome fully and reopen it, puzzle icon -> uBlock Origin Lite -> gear -> Custom filters.'
       Get-Content "$App\ubol-filters.txt" | Set-Clipboard
-      Write-Host 'The filters are on your clipboard - paste them there and save. Then run: lockboxctl filters lock'
+      Write-Host 'The filters are on your clipboard - paste them there and save. Then run: happybrowsing filters lock'
     } elseif ($A1 -eq 'lock') {
       $c.Filters = 'locked'; Save-Config $c; New-Item -Force "$Data\filters-pasted" | Out-Null
       Write-Host 'Locked within ~30 s. Restart Chrome; the Custom filters pane will be gone.'
-    } else { Write-Host 'usage: lockboxctl filters open|lock' }
+    } else { Write-Host 'usage: happybrowsing filters open|lock' }
   }
 
   'guide' {
     $c = Load-Config
-    Write-Host "Lockbox $Version - setup guide"
+    Write-Host "HappyBrowsing $Version - setup guide"
     function Step($t, [string[]]$lines) { Write-Host ''; Write-Host "NEXT: $t" -ForegroundColor Cyan; $lines | ForEach-Object { Write-Host "  $_" }; exit 0 }
-    if (-not (Test-Path "$Data\status.txt")) { Step 'Install Lockbox' @('Open Terminal as administrator, then:', 'cd $HOME\Downloads\lockbox-windows; powershell -ExecutionPolicy Bypass -File install.ps1') }
+    if (-not (Test-Path "$Data\status.txt")) { Step 'Install HappyBrowsing' @('Open Terminal as administrator, then:', 'cd $HOME\Downloads\happybrowsing-windows; powershell -ExecutionPolicy Bypass -File install.ps1') }
     $df = (Get-ItemProperty $UbolKey).disabledFeatures
     $uf = Join-Path $Data 'filters-pasted'
     if (-not (Test-Path $uf)) {
-      if ($c.Filters -ne 'open') { Step 'Open the YouTube filter editor' @('Admin Terminal:  lockboxctl filters open') }
+      if ($c.Filters -ne 'open') { Step 'Open the YouTube filter editor' @('Admin Terminal:  happybrowsing filters open') }
       Step 'Paste the YouTube filters, then lock them' @(
         '1. Quit Chrome fully (also from the system tray) and reopen it',
         '2. Puzzle icon -> uBlock Origin Lite -> gear -> Custom filters -> paste (already on your clipboard) -> save',
         '3. Open a YouTube video: only the video and its title should show',
-        '4. Admin Terminal:  lockboxctl filters lock')
+        '4. Admin Terminal:  happybrowsing filters lock')
     }
-    if (-not (Get-Service NextDNS)) { Write-Host 'Optional: NextDNS is not set up. Run "lockboxctl nextdns" for instructions.' }
+    if (-not (Get-Service NextDNS)) { Write-Host 'Optional: NextDNS is not set up. Run "happybrowsing nextdns" for instructions.' }
     if (-not $c.Armed) {
-      Step 'Arm it (removes your admin rights)' @('Open the apps you use day to day first, then in an admin Terminal:', "lockboxctl arm $env:USERNAME", 'Type ARM, then restart.')
+      Step 'Arm it (removes your admin rights)' @('Open the apps you use day to day first, then in an admin Terminal:', "happybrowsing arm $env:USERNAME", 'Type ARM, then restart.')
     }
-    Write-Host ''; Write-Host "All set - Lockbox is armed for $($c.TargetUser). Status: $(Get-Content "$Data\status.txt")"
-    Write-Host 'Need admin? Start menu -> Lockbox -> Request unlock.'
+    Write-Host ''; Write-Host "All set - HappyBrowsing is armed for $($c.TargetUser). Status: $(Get-Content "$Data\status.txt")"
+    Write-Host 'Need admin? Start menu -> HappyBrowsing -> Request unlock.'
   }
 
   'arm' {
     Need-Admin
     $u = $A1; $d = if ($A2) { [int]$A2 } else { 30 }; $w = if ($A3) { [int]$A3 } else { 120 }
-    if (-not $u -or -not (Get-LocalUser -Name $u)) { Write-Host 'usage: lockboxctl arm <local user name> [delay_min] [window_min]'; exit 1 }
+    if (-not $u -or -not (Get-LocalUser -Name $u)) { Write-Host 'usage: happybrowsing arm <local user name> [delay_min] [window_min]'; exit 1 }
     $others = @(Get-LocalUser | Where-Object { $_.Enabled -and $_.Name -ne $u -and (Is-AdminUser $_.Name) -and $_.SID.Value -notlike '*-500' })
     if ($others) { Write-Host "Note: these admin accounts will also lose admin: $($others.Name -join ', ')" }
-    Write-Host "This makes '$u' a Standard user. Getting admin back will need a $d-minute wait in the Lockbox app."
-    if ((Read-Host 'Type ARM to continue') -ne 'ARM') { Write-Host 'cancelled'; exit 1 }
+    Write-Host ''
+    Write-Host '  ============================  READ BEFORE ARMING  ============================' -ForegroundColor Yellow
+    Write-Host "   - '$u' becomes a Standard user: no admin, no changing system settings."
+    Write-Host "   - Getting admin back: Start menu -> HappyBrowsing -> Request unlock, wait $d minutes."
+    Write-Host "     Admin then lasts $w minutes. Uninstalling is only possible during an unlock."
+    Write-Host '   - While locked, programs installed after today may not open until the next unlock.'
+    Write-Host '   - HappyBrowsing is the only thing that gives admin back. If it stops working'
+    Write-Host '     while armed, getting admin back may mean resetting Windows.'
+    Write-Host '     Back up your files and save your BitLocker recovery key before arming.'
+    Write-Host '   - Provided as is, with no warranty. You use it at your own risk.'
+    Write-Host '  ==============================================================================' -ForegroundColor Yellow
+    Write-Host ''
+    if ((Read-Host 'Type ARM to continue (anything else cancels)') -ne 'ARM') { Write-Host 'cancelled'; exit 1 }
     Write-Host 'Recording which programs are trusted (open the apps you use before this)...'
     & powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$App\trust-scan.ps1" -User $u
     $c = Load-Config
@@ -142,18 +153,18 @@ NextDNS filters DNS on every network you join (optional - Lockbox's own blocks w
     Save-Config $c
     @{ State = 'locked'; UnlockAt = 0; RelockAt = 0 } | ConvertTo-Json | Set-Content "$Data\state.json" -Encoding UTF8
     Start-Sleep 12
-    if (Is-AdminUser $u) { Write-Host "Armed, but $u still shows as admin - run: lockboxctl verify" } else { Write-Host "ARMED. $u is now a Standard user. Sign out and back in (or restart)." }
+    if (Is-AdminUser $u) { Write-Host "Armed, but $u still shows as admin - run: happybrowsing verify" } else { Write-Host "ARMED. $u is now a Standard user. Sign out and back in (or restart)." }
   }
 
   'trust' {
     Need-Admin
-    if (-not (Test-Path $A1)) { Write-Host 'usage: lockboxctl trust C:\path\to\program.exe'; exit 1 }
+    if (-not (Test-Path $A1)) { Write-Host 'usage: happybrowsing trust C:\path\to\program.exe'; exit 1 }
     $sig = Get-AuthenticodeSignature -LiteralPath $A1
     if ($sig.Status -eq 'Valid') { $p = $sig.SignerCertificate.GetNameInfo('SimpleName', $false); Add-Content "$Data\trust\publishers.txt" $p; "trusted publisher $p" }
     else { $h = (Get-FileHash $A1 -Algorithm SHA256).Hash; Add-Content "$Data\trust\hashes.txt" $h; "trusted this exact file ($h)" }
   }
 
-  'status' { Get-Content "$Data\status.txt"; Get-Content "$Data\config.json"; Get-Content "$Data\lockbox.log" -Tail 15 }
+  'status' { Get-Content "$Data\status.txt"; Get-Content "$Data\config.json"; Get-Content "$Data\happybrowsing.log" -Tail 15 }
   'version' { $Version }
   default { Get-Content $PSCommandPath -TotalCount 8 | Select-Object -Skip 1 | ForEach-Object { $_ -replace '^# ?', '' } }
 }
