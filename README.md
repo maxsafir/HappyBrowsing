@@ -2,7 +2,7 @@
 
 **A commitment device for your computer.** HappyBrowsing blocks the distracting parts of the internet *and* takes away your own admin rights, so you can't undo it in a moment of weakness. When you genuinely need admin — to install an app or run an update — you request it and wait 30 minutes. The wait is the point.
 
-**Website:** https://maxsafir.github.io/lockbox · **Downloads:** [Mac](docs/downloads/happybrowsing-mac.zip) · [Windows](docs/downloads/happybrowsing-windows.zip)
+**Website:** https://maxsafir.github.io/happybrowsing · **Downloads:** [Mac](docs/downloads/happybrowsing-mac.zip) · [Windows](docs/downloads/happybrowsing-windows.zip)
 
 | | [macOS](mac/README.md) | [Windows](windows/README.md) |
 |---|---|---|
