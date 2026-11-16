@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.3.3
+VERSION=1.3.4
 BASE=/Library/Lockbox
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -48,7 +48,7 @@ case "$1" in
     grep -q '^# >>> lockbox' /etc/hosts && ok "hosts block present (Instagram + YouTube for other apps)" || bad "hosts block missing"
     n=0; for d in $(grep -v '^#' $BASE/youtube-domains.txt 2>/dev/null); do [ -f "/etc/resolver/$d" ] && n=$((n+1)); done
     [ $n -gt 0 ] && ok "YouTube resolver block files: $n" || bad "YouTube resolver block files missing"
-    if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null)" ]; then ok "YouTube does not resolve for other apps"
+    if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null | awk '/address:/{print $2}' | grep -vE '^(0\.0\.0\.0|::)$')" ]; then ok "YouTube does not resolve for other apps"
     else bad "YouTube still resolves for other apps (hosts block missing?)"; fi
     [ -n "$(dscacheutil -q host -a name www.google.com 2>/dev/null)" ] && ok "normal DNS works" || bad "normal DNS lookups failing"
     [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(wc -l < $BASE/trust/teams.txt | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
