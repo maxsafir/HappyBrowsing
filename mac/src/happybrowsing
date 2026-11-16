@@ -6,7 +6,7 @@
 #   arm <user> [delay] [window]   take admin away from <user>; delay/window in minutes (default 30 / 120)
 #   trust <app>                trust one more app while unlocked (e.g. something you built yourself)
 #   status                     state, config and recent log
-VERSION=1.5.0
+VERSION=1.5.1
 BASE=/Library/HappyBrowsing
 MP="/Library/Managed Preferences"
 MARK=nppiofogichmlkadpbpkpojpidedifeh
@@ -54,7 +54,7 @@ case "$1" in
     if [ -z "$(dscacheutil -q host -a name www.youtube.com 2>/dev/null | awk '/address:/{print $2}' | grep -vE '^(0\.0\.0\.0|::)$')" ]; then ok "YouTube does not resolve for other apps"
     elif [ -x /usr/local/bin/nextdns ]; then bad "YouTube still resolves for other apps"; else echo "  – YouTube isn't blocked for other apps without NextDNS (happybrowsing nextdns)"; fi
     [ -n "$(dscacheutil -q host -a name www.google.com 2>/dev/null)" ] && ok "normal DNS works" || bad "normal DNS lookups failing"
-    [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(wc -l < $BASE/trust/teams.txt | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
+    [ -s $BASE/trust/teams.txt ] && ok "app guard trust list: $(cat $BASE/trust/teams.txt 2>/dev/null | wc -l | tr -d ' ') developers" || echo "  – app guard trust list not built yet (built when you arm)"
     if [ -x /usr/local/bin/nextdns ]; then
       pgrep -x nextdns >/dev/null && ok "NextDNS running" || bad "NextDNS installed but not running"
     else echo "  – NextDNS not installed (optional)"; fi
@@ -81,7 +81,7 @@ NextDNS filters DNS on every network you join (optional — HappyBrowsing's own 
        Leave Settings → "Block Bypass Methods" OFF (it would break Chrome's encrypted DNS)
   4. Install it on this Mac (while unlocked):   sudo happybrowsing nextdns abc123
 TXT
-      if [ -x "$ND" ]; then echo; echo "Current: $($ND status 2>/dev/null), config $($ND config 2>/dev/null | awk '/^config /{print $2}')"
+      if [ -x "$ND" ]; then echo; echo "Current: $($ND status 2>/dev/null), profile $($ND config 2>/dev/null | awk '/^(profile|config) /{print $2; exit}')"
       else echo; echo "Current: not installed"; fi
       exit 0
     fi
@@ -99,7 +99,7 @@ TXT
     fi
     "$ND" uninstall >/dev/null 2>&1 || true
     FW=(); for d in $(grep -v '^#' $BASE/youtube-domains.txt); do FW+=(-forwarder "$d=https://127.0.0.1:9/dns-query"); done
-    "$ND" install -config "$ID" -report-client-info -auto-activate "${FW[@]}" >/dev/null   # YouTube blocked for every app except Chrome
+    "$ND" install -profile "$ID" -report-client-info -auto-activate "${FW[@]}" >/dev/null   # YouTube blocked for every app except Chrome
     sleep 2; echo "NextDNS: $($ND status) with config $ID"
     echo "Check it at https://test.nextdns.io (should say status: ok)";;
 
@@ -170,7 +170,7 @@ WARN
     out=$(codesign -dv --verbose=4 "$A" 2>&1); team=$(sed -n 's/^TeamIdentifier=//p' <<<"$out"); cd=$(sed -n 's/^CDHash=//p' <<<"$out")
     if [ -n "$team" ] && [ "$team" != "not set" ]; then echo "$team" >> $BASE/trust/teams.txt; echo "trusted developer $team"
     else echo "$cd" >> $BASE/trust/cdhashes.txt; echo "trusted this exact build ($cd)"; fi
-    sort -u -o $BASE/trust/teams.txt $BASE/trust/teams.txt; sort -u -o $BASE/trust/cdhashes.txt $BASE/trust/cdhashes.txt
+    sort -u -o $BASE/trust/teams.txt $BASE/trust/teams.txt; sort -u -o $BASE/trust/cdhashes.txt $BASE/trust/cdhashes.txt; chmod 644 $BASE/trust/*.txt
     rm -f /var/run/happybrowsing-sig.txt;;
 
   status) cat $BASE/status.txt; echo; cat $BASE/config; tail -n 15 /var/log/happybrowsing.log;;

@@ -80,6 +80,7 @@ osacompile -o /Applications/HappyBrowsing.app "$SRC/HappyBrowsing.applescript"
 chown -R root:wheel /Applications/HappyBrowsing.app
 # so the app guard never closes the new app while locked
 [ -d "$BASE/trust" ] && "$BASE/happybrowsing" trust /Applications/HappyBrowsing.app >/dev/null 2>&1 || true
+[ -d "$BASE/trust" ] && chmod 755 "$BASE/trust" && chmod 644 "$BASE"/trust/*.txt 2>/dev/null || true
 
 echo "== 5/6 Enforcer service"
 cp -f "$SRC/com.happybrowsing.enforcer.plist" /Library/LaunchDaemons/

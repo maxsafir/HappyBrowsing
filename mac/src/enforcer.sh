@@ -177,10 +177,10 @@ enforce_nextdns() {
     grep -qF "forwarder $d.=" <<<"$cfg" || grep -qF "forwarder $d=" <<<"$cfg" || missing=1
   done
   if [ $missing = 1 ]; then
-    local id; id=$("$NEXTDNS" config 2>/dev/null | awk '/^config /{print $2; exit}')
+    local id; id=$("$NEXTDNS" config 2>/dev/null | awk '/^(profile|config) /{print $2; exit}' | sed 's/.*=//')
     if [ -n "$id" ]; then
       local args=(); while IFS= read -r a; do args+=("$a"); done < <(nextdns_forwarders)
-      "$NEXTDNS" install -config "$id" -report-client-info -auto-activate "${args[@]}" >/dev/null 2>&1 && log "nextdns YouTube forwarders re-applied"
+      "$NEXTDNS" install -profile "$id" -report-client-info -auto-activate "${args[@]}" >/dev/null 2>&1 && log "nextdns YouTube forwarders re-applied"
     fi
   fi
   "$NEXTDNS" status 2>/dev/null | grep -qi running || { "$NEXTDNS" start >/dev/null 2>&1; log "nextdns started"; }
@@ -233,7 +233,7 @@ write_status() {
 
 # ---------- main loop ----------
 mkdir -p "$INBOX"; chmod 1777 "$INBOX"
-log "enforcer 1.5.0 started"
+log "enforcer 1.5.1 started"
 i=0
 while true; do
   load
